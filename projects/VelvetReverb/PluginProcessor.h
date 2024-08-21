@@ -98,9 +98,9 @@ public:
 
 private:
     mrta::ParameterManager parameterManager;
-    //VelvetReverb velvetReverb;
+    VelvetReverb velvetReverb;
     
-    mrta::Ramp<float> enableRamp;
+    DSP::Ramp<float> enableRamp;
     juce::AudioBuffer<float> fxBuffer;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VelvetReverbAudioProcessor)

@@ -23,7 +23,7 @@ static const std::vector<mrta::ParameterInfo> parameterInfos
 //==============================================================================
 VelvetReverbAudioProcessor::VelvetReverbAudioProcessor() : 
     parameterManager(*this, ProjectInfo::projectName, parameterInfos),
-    //velvetReverb(240000, 10000, 2),
+    velvetReverb(240000, 10000, 2),
     enableRamp(0.05f)
 
 {
@@ -36,13 +36,13 @@ VelvetReverbAudioProcessor::VelvetReverbAudioProcessor() :
     parameterManager.registerParameterCallback(Param::ID::ReverberationTime,
     [this] (float newValue, bool /*force*/)
     {
-        //velvetReverb.setReverberationTime(newValue);
+        velvetReverb.setReverberationTime(newValue);
     });
     
     parameterManager.registerParameterCallback(Param::ID::Density,
     [this] (float newValue, bool /*force*/)
     {
-        //velvetReverb.setDensity(newValue);
+        velvetReverb.setDensity(newValue);
     });
 }
 
@@ -128,7 +128,7 @@ void VelvetReverbAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
 
 void VelvetReverbAudioProcessor::releaseResources()
 {
-    //velvetReverb.clear();
+    velvetReverb.clear();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -168,7 +168,7 @@ void VelvetReverbAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (int ch = 0; ch < static_cast<int>(numChannels); ++ch)
         fxBuffer.copyFrom(ch, 0, buffer, ch, 0, static_cast<int>(numSamples));
 
-    //velvetReverb.process(fxBuffer.getArrayOfWritePointers(), fxBuffer.getArrayOfReadPointers(), numChannels, numSamples);
+    velvetReverb.process(fxBuffer.getArrayOfWritePointers(), fxBuffer.getArrayOfReadPointers(), numChannels, numSamples);
     enableRamp.applyGain(fxBuffer.getArrayOfWritePointers(), numChannels, numSamples);
 
     for (int ch = 0; ch < static_cast<int>(numChannels); ++ch)

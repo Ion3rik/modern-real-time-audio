@@ -190,3 +190,21 @@ add_plugin(flanger
     INCLUDE_DIRS
         ${dsp_source}
         ${flanger_source})
+
+# Velvet Reverb Project
+set(velvetreverb_source ${CMAKE_CURRENT_SOURCE_DIR}/projects/VelvetReverb)
+
+add_plugin(velvetreverb
+    VERSION 0.1.0
+    PLUGIN_NAME "Velvet Reverb"
+    PROD_NAME Velvet Reverb
+    PROD_CODE Vtrb
+    SYNTH FALSE
+    SOURCES
+        ${velvetreverb_source}/PluginEditor.cpp
+        ${velvetreverb_source}/PluginProcessor.cpp
+        ${velvetreverb_source}/MultiTapDelayLine.cpp
+        ${velvetreverb_source}/VelvetReverb.cpp
+    INCLUDE_DIRS
+        ${dsp_source}
+        ${velvetreverb_source})

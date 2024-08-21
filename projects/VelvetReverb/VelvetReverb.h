@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "../dsp/Ramp.h"
-#include "../dsp/MultiTapDelayLine.h"
+#include "../DSP/Ramp.h"
+#include "./MultiTapDelayLine.h"
 
 
 class VelvetReverb
@@ -53,8 +53,8 @@ private:
     MultiTapDelayLine multiTapDelayLine;
     
     // Parameter ramps
-    mrta::Ramp<float> reverberationTimeRamp;
-    mrta::Ramp<float> densityRamp;
+    DSP::Ramp<float> reverberationTimeRamp;
+    DSP::Ramp<float> densityRamp;
     
     // Parameter values
     float reverberationTimeS {1.f};
