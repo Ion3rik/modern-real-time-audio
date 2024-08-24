@@ -59,9 +59,10 @@ public:
     void computeDelays(unsigned int totalDelay, unsigned int newNumTaps, unsigned int numChannels);
 
 private:
+    unsigned int numPulses { 0u };
     std::vector<std::vector<float>> delayBuffer;
     std::vector<std::vector<unsigned int>> delayTimes;
     std::vector<std::vector<float>> delayGains;
-    unsigned int writeIndex { 0 };
+    unsigned int writeIndex { 0u };
 };
 

@@ -12,6 +12,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <JuceHeader.h>
+#include <random>
 
 
 MultiTapDelayLine::MultiTapDelayLine(unsigned int maxLengthSamples, unsigned int numTaps, unsigned int numChannels)
@@ -45,6 +47,8 @@ void MultiTapDelayLine::clear()
 void MultiTapDelayLine::prepare(unsigned int maxLengthSamples, unsigned int maxTaps, unsigned int numChannels)
 {
     delayBuffer.clear();
+    delayTimes.clear();
+    delayGains.clear();
     for (unsigned int ch = 0; ch < numChannels; ++ch)
     {
         delayBuffer.emplace_back(maxLengthSamples, 0.f);
@@ -56,26 +60,23 @@ void MultiTapDelayLine::prepare(unsigned int maxLengthSamples, unsigned int maxT
 void MultiTapDelayLine::process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples)
 {
     const unsigned int delayBufferSize { static_cast<unsigned int>(delayBuffer[0].size()) };
-    const unsigned int delayTaps {static_cast<unsigned int>(delayBuffer[1].size()) };
+    const unsigned int delayTaps = numPulses;
 
     numChannels = std::min(numChannels, static_cast<unsigned int>(delayBuffer.size()));
+    //unsigned int m = static_cast<unsigned int>(delayTimes[0].back());
     for (unsigned int ch = 0; ch < numChannels; ++ch)
     {
         unsigned int workingWriteIndex { writeIndex };
-
-        for (unsigned int n = 0; n < numSamples; ++n)
+        for (unsigned int n = 0; n < numSamples; ++n) // loop through each sample
         {
             const float x { input[ch][n] };
-            
-            for (unsigned int m = 0; m < delayTaps; m++) // loop through each tap in the delay line
-            {
+            for (unsigned int m = 0; m < delayTaps; m++) // loop through each pulse
+            {   
                 unsigned int workingReadIndex { (workingWriteIndex + delayBufferSize - delayTimes[ch][m]) % delayBufferSize };
-                output[ch][n] = delayGains[ch][m] * delayBuffer[ch][workingReadIndex];
+                output[ch][n] += delayGains[ch][m] * delayBuffer[ch][workingReadIndex];
             }
-                
-            delayBuffer[ch][workingWriteIndex] = x;
-            
-            ++workingWriteIndex; workingWriteIndex %= delayBufferSize;
+            delayBuffer[ch][workingWriteIndex] = x; // write to the delay line
+            ++workingWriteIndex; workingWriteIndex %= delayBufferSize; // increment the working write index
             
         }
     }
@@ -195,21 +196,30 @@ void MultiTapDelayLine::computeDelays(unsigned int totalDelay, unsigned int newN
     numChannels = std::min(numChannels, static_cast<unsigned int>(delayBuffer[0].size()));
     totalDelay = std::min(totalDelay, static_cast<unsigned int>(delayBuffer[1].size()));
     newNumTaps = std::min(newNumTaps, static_cast<unsigned int>(delayTimes[1].size()));
+    numPulses = newNumTaps;
     
     float alpha = -log(pow(10, -3)) * (1.f / totalDelay);
     
     float Td = totalDelay * (1.f / newNumTaps); // grid size
+
+    // Create a random number generator (Mersenne Twister engine)
+    std::random_device rd;  // Obtain a seed from the hardware
+    std::mt19937 gen(rd()); // Seed the generator
+
+    // Define a uniform distribution in the range [0, 1]
+    std::uniform_real_distribution<> dis(0.0, 1.0);
     
     for (unsigned int ch = 0; ch < numChannels; ++ch)
     {
         for (unsigned int m = 0; m < newNumTaps; m++)
         {
-            float r1 = rand();
-            float r2 = rand();
-            delayTimes[ch][m] = Td * (m + r2);
+            float r1 = dis(gen);
+            float r2 = dis(gen);
+            delayTimes[ch][m] = roundf( m * Td + r1 * (Td-1));
             delayGains[ch][m] = roundf( 2.f * r1 - 1.f) * exp(-alpha * delayTimes[ch][m]); // sign * exponential decay term
         }
     }
+
 }
 
 

@@ -37,7 +37,7 @@ void VelvetReverb::prepare(double newSampleRate, unsigned int maxLengthSamples, 
     
     unsigned int M = round(rt * (1.f / (newSampleRate * (1.f / densityPulsesPerS))));
     
-    multiTapDelayLine.computeDelays(rt, M, numChannels);
+    multiTapDelayLine.computeDelays(rt, 10, numChannels);
     
     reverberationTimeRamp.prepare(newSampleRate, true, reverberationTimeS);
     densityRamp.prepare(newSampleRate, true, densityPulsesPerS);

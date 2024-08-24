@@ -19,20 +19,16 @@ namespace Param
 {
     namespace ID
     {
-        static const juce::String Enabled { "enabled" };
         static const juce::String ReverberationTime { "reverberation_time" };
         static const juce::String Density { "density" };
     }
     namespace Name
     {
-        static const juce::String Enabled { "Enabled" };
         static const juce::String ReverberationTime { "Reverberation Time" };
         static const juce::String Density { "Density" };
     }
     namespace Ranges
     {
-        static const juce::String EnabledOff { "Off" };
-        static const juce::String EnabledOn { "On" };
         
         static constexpr float ReverberationTimeMin {0.f};
         static constexpr float ReverberationTimeMax {5.f};
@@ -100,7 +96,6 @@ private:
     mrta::ParameterManager parameterManager;
     VelvetReverb velvetReverb;
     
-    DSP::Ramp<float> enableRamp;
     juce::AudioBuffer<float> fxBuffer;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VelvetReverbAudioProcessor)

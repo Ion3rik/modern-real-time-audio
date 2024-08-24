@@ -58,7 +58,7 @@ private:
     
     // Parameter values
     float reverberationTimeS {1.f};
-    float densityPulsesPerS {1500.f};
+    float densityPulsesPerS {100.f};
 };
 
 

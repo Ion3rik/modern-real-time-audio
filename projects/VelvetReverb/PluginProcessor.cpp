@@ -11,10 +11,9 @@
 
 static const std::vector<mrta::ParameterInfo> parameterInfos
 {
-    { Param::ID::Enabled,  Param::Name::Enabled,  Param::Ranges::EnabledOff, Param::Ranges::EnabledOn, true },
-    { Param::ID::ReverberationTime,   Param::Name::ReverberationTime,   Param::Units::S, 1.f,  Param::Ranges::ReverberationTimeMin,
+    { Param::ID::ReverberationTime,   Param::Name::ReverberationTime,   Param::Units::S, .5f,  Param::Ranges::ReverberationTimeMin,
         Param::Ranges::ReverberationTimeMax,   Param::Ranges::ReverberationTimeInc,   Param::Ranges::ReverberationTimeSkw },
-    { Param::ID::Density,   Param::Name::Density,   Param::Units::Rho,  1000.f,  Param::Ranges::DensityMin,
+    { Param::ID::Density,   Param::Name::Density,   Param::Units::Rho,  100.f,  Param::Ranges::DensityMin,
         Param::Ranges::DensityMax,   Param::Ranges::DensityInc,   Param::Ranges::DensitySkw },
     
     
@@ -23,15 +22,10 @@ static const std::vector<mrta::ParameterInfo> parameterInfos
 //==============================================================================
 VelvetReverbAudioProcessor::VelvetReverbAudioProcessor() : 
     parameterManager(*this, ProjectInfo::projectName, parameterInfos),
-    velvetReverb(240000, 10000, 2),
-    enableRamp(0.05f)
+    velvetReverb(960000, 2000, 2)
 
 {
-    parameterManager.registerParameterCallback(Param::ID::Enabled,
-    [this](float newValue, bool force)
-    {
-        enableRamp.setTarget(std::fmin(std::fmax(newValue, 0.f), 1.f), force);
-    });
+
     
     parameterManager.registerParameterCallback(Param::ID::ReverberationTime,
     [this] (float newValue, bool /*force*/)
@@ -117,8 +111,7 @@ void VelvetReverbAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
 {
     const unsigned int numChannels { static_cast<unsigned int>(std::max(getMainBusNumInputChannels(), getMainBusNumOutputChannels())) };
     
-    //velvetReverb.prepare(sampleRate, 240000, 10000, numChannels);
-    enableRamp.prepare(sampleRate);
+    velvetReverb.prepare(sampleRate, 48000, 2000, numChannels);
     
     parameterManager.updateParameters(true);
     
@@ -169,7 +162,6 @@ void VelvetReverbAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         fxBuffer.copyFrom(ch, 0, buffer, ch, 0, static_cast<int>(numSamples));
 
     velvetReverb.process(fxBuffer.getArrayOfWritePointers(), fxBuffer.getArrayOfReadPointers(), numChannels, numSamples);
-    enableRamp.applyGain(fxBuffer.getArrayOfWritePointers(), numChannels, numSamples);
 
     for (int ch = 0; ch < static_cast<int>(numChannels); ++ch)
         buffer.addFrom(ch, 0, fxBuffer, ch, 0, static_cast<int>(numSamples));
