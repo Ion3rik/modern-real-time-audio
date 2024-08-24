@@ -20,12 +20,12 @@ namespace Param
     namespace ID
     {
         static const juce::String ReverberationTime { "reverberation_time" };
-        static const juce::String Density { "density" };
+        static const juce::String NumPulses { "number_of_pulses" };
     }
     namespace Name
     {
         static const juce::String ReverberationTime { "Reverberation Time" };
-        static const juce::String Density { "Density" };
+        static const juce::String NumPulses { "Number of Pulses" };
     }
     namespace Ranges
     {
@@ -35,15 +35,14 @@ namespace Param
         static constexpr float ReverberationTimeInc {0.01f};
         static constexpr float ReverberationTimeSkw {0.5f};
     
-        static constexpr float DensityMin {0.f};
-        static constexpr float DensityMax {2000.f};
-        static constexpr float DensityInc {10.f};
-        static constexpr float DensitySkw {0.5f};
+        static constexpr unsigned int NumPulsesMin {1u};
+        static constexpr unsigned int NumPulsesMax {1000u};
+        static constexpr unsigned int NumPulsesInc {1u};
+        static constexpr float NumPulsesSkw {0.5f};
     }
     namespace Units
     {
     static const juce::String S { "s" };
-    static const juce::String Rho { "pulses/s" };
     
     }
 }

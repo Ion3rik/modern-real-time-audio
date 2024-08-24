@@ -35,12 +35,9 @@ void VelvetReverb::prepare(double newSampleRate, unsigned int maxLengthSamples, 
     
     unsigned int rt = round(reverberationTimeS * sampleRate);
     
-    unsigned int M = round(rt * (1.f / (newSampleRate * (1.f / densityPulsesPerS))));
-    
-    multiTapDelayLine.computeDelays(rt, 10, numChannels);
+    multiTapDelayLine.computeDelays(rt, multiTapDelayLine.getNumPulses(), numChannels);
     
     reverberationTimeRamp.prepare(newSampleRate, true, reverberationTimeS);
-    densityRamp.prepare(newSampleRate, true, densityPulsesPerS);
     
 }
 
@@ -55,8 +52,7 @@ void VelvetReverb::setReverberationTime(float newReverberationTimeS)
     reverberationTimeRamp.setTarget(reverberationTimeS);
 }
 
-void VelvetReverb::setDensity(float newDensityPulsesPerS)
+void VelvetReverb::setNumPulses(unsigned int newNumPulses)
 {
-    densityPulsesPerS = std::fmax(newDensityPulsesPerS, 0.f);
-    densityRamp.setTarget(densityPulsesPerS);
+    numPulses = std::max(newNumPulses, 0u);
 }

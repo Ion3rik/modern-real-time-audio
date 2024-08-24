@@ -84,6 +84,13 @@ void MultiTapDelayLine::process(float* const* output, const float* const* input,
     writeIndex += numSamples; writeIndex %= delayBufferSize;
 }
 
+unsigned int MultiTapDelayLine::getNumPulses() const
+{
+    return numPulses;
+}
+
+
+
 /*
 void MultiTapDelayLine::process(float* output, const float* input, unsigned int numChannels)
 {

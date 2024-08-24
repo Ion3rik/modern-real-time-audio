@@ -13,8 +13,8 @@ static const std::vector<mrta::ParameterInfo> parameterInfos
 {
     { Param::ID::ReverberationTime,   Param::Name::ReverberationTime,   Param::Units::S, .5f,  Param::Ranges::ReverberationTimeMin,
         Param::Ranges::ReverberationTimeMax,   Param::Ranges::ReverberationTimeInc,   Param::Ranges::ReverberationTimeSkw },
-    { Param::ID::Density,   Param::Name::Density,   Param::Units::Rho,  100.f,  Param::Ranges::DensityMin,
-        Param::Ranges::DensityMax,   Param::Ranges::DensityInc,   Param::Ranges::DensitySkw },
+    { Param::ID::NumPulses,   Param::Name::NumPulses,   "",  100u,  Param::Ranges::NumPulsesMin,
+        Param::Ranges::NumPulsesMax,   Param::Ranges::NumPulsesInc,   Param::Ranges::NumPulsesSkw },
     
     
 };
@@ -33,10 +33,10 @@ VelvetReverbAudioProcessor::VelvetReverbAudioProcessor() :
         velvetReverb.setReverberationTime(newValue);
     });
     
-    parameterManager.registerParameterCallback(Param::ID::Density,
+    parameterManager.registerParameterCallback(Param::ID::NumPulses,
     [this] (float newValue, bool /*force*/)
     {
-        velvetReverb.setDensity(newValue);
+        velvetReverb.setNumPulses(newValue);
     });
 }
 

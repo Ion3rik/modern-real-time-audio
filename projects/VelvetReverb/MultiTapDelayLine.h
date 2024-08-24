@@ -39,6 +39,7 @@ public:
     // Process audio with the currently (fixed) set delay time
     void process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples);
     
+    unsigned int getNumPulses() const;
     /*
     // Single sample flavour of the fixed delay time processing
     void process(float* output, const float* input, unsigned int numChannels);
@@ -59,7 +60,7 @@ public:
     void computeDelays(unsigned int totalDelay, unsigned int newNumTaps, unsigned int numChannels);
 
 private:
-    unsigned int numPulses { 0u };
+    unsigned int numPulses { 100u };
     std::vector<std::vector<float>> delayBuffer;
     std::vector<std::vector<unsigned int>> delayTimes;
     std::vector<std::vector<float>> delayGains;

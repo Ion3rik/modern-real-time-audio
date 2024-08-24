@@ -44,7 +44,7 @@ public:
     void setReverberationTime(float newReverberationTimeS);
     
     // Set a constant velvet noise density in pulses/s
-    void setDensity(float newDensityPulsesPerS);
+    void setNumPulses(unsigned int newNumPulses);
     
 
 private:
@@ -54,11 +54,10 @@ private:
     
     // Parameter ramps
     DSP::Ramp<float> reverberationTimeRamp;
-    DSP::Ramp<float> densityRamp;
     
     // Parameter values
     float reverberationTimeS {1.f};
-    float densityPulsesPerS {100.f};
+    unsigned int numPulses {100u};
 };
 
 
