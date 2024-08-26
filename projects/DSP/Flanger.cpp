@@ -6,7 +6,7 @@ namespace DSP
 {
 
 Flanger::Flanger(float maxTimeMs, unsigned int numChannels) :
-    delayLine(static_cast<unsigned int>(std::ceil(std::fmax(maxTimeMs, 1.f) * sampleRate)), numChannels),
+    delayLine(static_cast<unsigned int>(std::ceil(std::fmax(maxTimeMs, 1.f) * static_cast<float>(0.001 * sampleRate))), numChannels),
     offsetRamp(0.05f),
     modDepthRamp(0.05f)
 {

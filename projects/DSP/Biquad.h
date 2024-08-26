@@ -40,6 +40,10 @@ public:
     // This method can be called with a lower number of channels than allocated
     void process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples);
 
+    // Process audio
+    // Single sample flavour
+    void process(float* output, const float* input, unsigned int numChannels);
+
     // return the number of currently allocated channels
     unsigned int getAllocatedChannels() const noexcept { return allocatedChannels; }
 

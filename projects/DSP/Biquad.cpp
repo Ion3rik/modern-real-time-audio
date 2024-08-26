@@ -78,4 +78,31 @@ void Biquad::process(float* const* output, const float* const* input, unsigned i
     }
 }
 
+void Biquad::process(float* output, const float* input, unsigned int numChannels)
+{
+    numChannels = std::min(numChannels, allocatedChannels);
+    for (unsigned int c = 0; c < numChannels; ++c)
+    {
+        float x { input[c] };
+        for (unsigned int s = 0; s < allocatedSections; ++s)
+        {
+            const unsigned int stateOffset { c * allocatedSections * StatesPerSection + s * StatesPerSection };
+            const unsigned int coeffOffset { s * CoeffsPerSection };
+
+            float acc { x * coeffs[coeffOffset + 0] }; // b0
+            acc += coeffs[coeffOffset + 1] * states[stateOffset + 0]; // b1
+            acc += coeffs[coeffOffset + 2] * states[stateOffset + 1]; // b2
+            acc -= coeffs[coeffOffset + 3] * states[stateOffset + 2]; // a1
+            acc -= coeffs[coeffOffset + 4] * states[stateOffset + 3]; // a2
+
+            states[stateOffset + 1] = states[stateOffset + 0];
+            states[stateOffset + 0] = x;
+            states[stateOffset + 3] = states[stateOffset + 2];
+            states[stateOffset + 2] = acc;
+            x = acc;
+        }
+        output[c] = x;
+    }
+}
+
 }

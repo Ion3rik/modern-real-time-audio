@@ -39,6 +39,11 @@ void ParametricEqualizer::process(float* const* output, const float* const* inpu
     biquad.process(output, input, numChannels, numSamples);
 }
 
+void ParametricEqualizer::process(float* output, const float* input, unsigned int numChannels)
+{
+    biquad.process(output, input, numChannels);
+}
+
 void ParametricEqualizer::setBandType(unsigned int band, FilterType type)
 {
     if (band < bands.size() && band < biquad.getAllocatedSections())
@@ -159,6 +164,8 @@ std::array<float, DSP::Biquad::CoeffsPerSection> ParametricEqualizer::calculateC
                        (aplus1 - aminus1TimesCoso - beta) * a0 };
         }
         break;
+
+        default: break;
     }
 
     return coeffs;

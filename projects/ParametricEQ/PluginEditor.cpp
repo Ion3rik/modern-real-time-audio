@@ -10,6 +10,8 @@ ParametricEQAudioProcessorEditor::ParametricEQAudioProcessorEditor(ParametricEQA
     band2ParameterEditor(audioProcessor.getParamterManager(), ParamHeight,
                          { Param::ID::Band2Type, Param::ID::Band2Freq, Param::ID::Band2Reso, Param::ID::Band2Gain })
 {
+    setLookAndFeel(&laf);
+
     addAndMakeVisible(band0ParameterEditor);
     addAndMakeVisible(band1ParameterEditor);
     addAndMakeVisible(band2ParameterEditor);
@@ -19,6 +21,7 @@ ParametricEQAudioProcessorEditor::ParametricEQAudioProcessorEditor(ParametricEQA
 
 ParametricEQAudioProcessorEditor::~ParametricEQAudioProcessorEditor()
 {
+    setLookAndFeel(nullptr);
 }
 
 void ParametricEQAudioProcessorEditor::paint (juce::Graphics& g)

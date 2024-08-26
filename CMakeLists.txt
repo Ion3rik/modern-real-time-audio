@@ -121,6 +121,7 @@ endfunction(add_plugin)
 ## Plugin projects
 
 set(dsp_source ${CMAKE_CURRENT_SOURCE_DIR}/projects/DSP)
+set(gui_source ${CMAKE_CURRENT_SOURCE_DIR}/projects/GUI)
 
 # add example project
 set(mfrtaa_source ${CMAKE_CURRENT_SOURCE_DIR}/projects/MyFirstRealTimeAudioApp)
@@ -169,7 +170,9 @@ add_plugin(parameq
         ${parameq_source}/PluginProcessor.cpp
         ${dsp_source}/Biquad.cpp
         ${dsp_source}/ParametricEqualizer.cpp
+        ${gui_source}/MrtaLAF.cpp
     INCLUDE_DIRS
+        ${gui_source}
         ${dsp_source}
         ${ringmod_source})
 
@@ -208,3 +211,95 @@ add_plugin(velvetreverb
     INCLUDE_DIRS
         ${dsp_source}
         ${velvetreverb_source})
+
+# delay project
+set(delay_source ${CMAKE_CURRENT_SOURCE_DIR}/projects/Delay)
+
+add_plugin(delay
+    VERSION 0.1.0
+    PLUGIN_NAME "Delay"
+    PROD_NAME Delay
+    PROD_CODE Dlay
+    SYNTH FALSE
+    SOURCES
+        ${delay_source}/PluginEditor.cpp
+        ${delay_source}/PluginProcessor.cpp
+        ${dsp_source}/DelayLine.cpp
+        ${dsp_source}/Delay.cpp
+        ${dsp_source}/Biquad.cpp
+        ${dsp_source}/ParametricEqualizer.cpp
+        ${dsp_source}/Meter.cpp
+        ${gui_source}/MeterComponent.cpp
+    INCLUDE_DIRS
+        ${dsp_source}
+        ${gui_source}
+        ${delay_source})
+
+# osc project
+set(osc_source ${CMAKE_CURRENT_SOURCE_DIR}/projects/Oscillators)
+
+add_plugin(osc
+    VERSION 0.1.0
+    PLUGIN_NAME "Oscillators"
+    PROD_NAME Oscillators
+    PROD_CODE Oscs
+    SYNTH FALSE
+    SOURCES
+        ${osc_source}/PluginEditor.cpp
+        ${osc_source}/PluginProcessor.cpp
+        ${dsp_source}/Oscillator.cpp
+    INCLUDE_DIRS
+        ${dsp_source}
+        ${osc_source})
+
+# midi handling project
+set(midi_source ${CMAKE_CURRENT_SOURCE_DIR}/projects/MidiHandler)
+
+add_plugin(midi
+    VERSION 0.1.0
+    PLUGIN_NAME "Midi Handler"
+    PROD_NAME MidiHandler
+    PROD_CODE Mdhd
+    SYNTH TRUE
+    SOURCES
+        ${midi_source}/PluginEditor.cpp
+        ${midi_source}/PluginProcessor.cpp
+        ${dsp_source}/SynthVoice.cpp
+        ${dsp_source}/Oscillator.cpp
+    INCLUDE_DIRS
+        ${dsp_source}
+        ${midi_source})
+
+# envelope generator project
+set(envgen_source ${CMAKE_CURRENT_SOURCE_DIR}/projects/EnvelopeGenerator)
+
+add_plugin(envgen
+    VERSION 0.1.0
+    PLUGIN_NAME "Envelope Generator"
+    PROD_NAME EnvelopeGenerator
+    PROD_CODE Egen
+    SYNTH FALSE
+    SOURCES
+        ${envgen_source}/PluginEditor.cpp
+        ${envgen_source}/PluginProcessor.cpp
+        ${dsp_source}/EnvelopeGenerator.cpp
+    INCLUDE_DIRS
+        ${dsp_source}
+        ${envgen_source})
+
+# state variable filter project
+set(svf_source ${CMAKE_CURRENT_SOURCE_DIR}/projects/StateVariableFilter)
+
+add_plugin(svf
+    VERSION 0.1.0
+    PLUGIN_NAME "State Variable Filter"
+    PROD_NAME StateVariableFilter
+    PROD_CODE Svff
+    SYNTH FALSE
+    SOURCES
+        ${svf_source}/PluginEditor.cpp
+        ${svf_source}/PluginProcessor.cpp
+        ${dsp_source}/StateVariableFilter.cpp
+    INCLUDE_DIRS
+        ${dsp_source}
+        ${svf_source})

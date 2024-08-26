@@ -48,6 +48,10 @@ public:
     // This method can be called with a lower number of channels than allocated
     void process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples);
 
+    // Process audio buffers
+    // Single sample flavour
+    void process(float* output, const float* input, unsigned int numChannels);
+
     // Set filter type of a band
     void setBandType(unsigned int band, FilterType type);
 
