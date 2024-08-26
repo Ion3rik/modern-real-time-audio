@@ -11,7 +11,8 @@
 #include "VelvetReverb.h"
 #include "MultiTapDelayLine.h"
 
-
+namespace DSP
+{
 VelvetReverb::VelvetReverb(unsigned int maxLengthSamples, unsigned int maxTaps, unsigned int numChannels) :
     multiTapDelayLine(maxLengthSamples, maxTaps, numChannels)
 {
@@ -62,4 +63,5 @@ void VelvetReverb::computeDelays(unsigned int numChannels)
 {
     unsigned int delayTimeSamples = static_cast<unsigned int>(reverberationTimeS * sampleRate);
     multiTapDelayLine.computeDelays(delayTimeSamples, numPulses, numChannels);
+}
 }

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "DarkVelvetReverb.h"
 #include "VelvetReverb.h"
 
 //==============================================================================
@@ -93,7 +94,7 @@ public:
 
 private:
     mrta::ParameterManager parameterManager;
-    DSP::VelvetReverb velvetReverb;
+    DSP::DarkVelvetReverb velvetReverb;
     
     juce::AudioBuffer<float> fxBuffer;
     //==============================================================================

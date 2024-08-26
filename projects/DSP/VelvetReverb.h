@@ -13,7 +13,8 @@
 #include "../DSP/Ramp.h"
 #include "./MultiTapDelayLine.h"
 
-
+namespace DSP
+{
 class VelvetReverb
 {
 public:
@@ -61,5 +62,5 @@ private:
     float reverberationTimeS {1.f};
     unsigned int numPulses {100u};
 };
-
+}
 

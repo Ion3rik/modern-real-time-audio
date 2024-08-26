@@ -206,8 +206,8 @@ add_plugin(velvetreverb
     SOURCES
         ${velvetreverb_source}/PluginEditor.cpp
         ${velvetreverb_source}/PluginProcessor.cpp
-        ${velvetreverb_source}/MultiTapDelayLine.cpp
-        ${velvetreverb_source}/VelvetReverb.cpp
+        ${dsp_source}/MultiTapDelayLine.cpp
+        ${dsp_source}/VelvetReverb.cpp
     INCLUDE_DIRS
         ${dsp_source}
         ${velvetreverb_source})
@@ -303,3 +303,21 @@ add_plugin(svf
     INCLUDE_DIRS
         ${dsp_source}
         ${svf_source})
+
+# Dark Velvet Reverb Project
+set(darkvelvetreverb_source ${CMAKE_CURRENT_SOURCE_DIR}/projects/DarkVelvetReverb)
+
+add_plugin(darkvelvetreverb
+    VERSION 0.1.0
+    PLUGIN_NAME "Dark Velvet Reverb"
+    PROD_NAME Dark Velvet Reverb
+    PROD_CODE dvnr
+    SYNTH FALSE
+    SOURCES
+        ${darkvelvetreverb_source}/PluginEditor.cpp
+        ${darkvelvetreverb_source}/PluginProcessor.cpp
+        ${dsp_source}/MultiTapDelayLine.cpp
+        ${dsp_source}/DarkVelvetReverb.cpp
+    INCLUDE_DIRS
+        ${dsp_source}
+        ${darkvelvetreverb_source})
