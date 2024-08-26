@@ -43,8 +43,10 @@ public:
     // Set a broadband reverberation time in seconds
     void setReverberationTime(float newReverberationTimeS);
     
-    // Set a constant velvet noise density in pulses/s
+    // Set number of velvet pulses
     void setNumPulses(unsigned int newNumPulses);
+
+    void computeDelays(unsigned int numChannels);
     
 
 private:

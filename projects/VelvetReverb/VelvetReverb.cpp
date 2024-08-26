@@ -9,6 +9,7 @@
 */
 
 #include "VelvetReverb.h"
+#include "MultiTapDelayLine.h"
 
 
 VelvetReverb::VelvetReverb(unsigned int maxLengthSamples, unsigned int maxTaps, unsigned int numChannels) :
@@ -49,10 +50,16 @@ void VelvetReverb::process(float* const* output, const float* const* input, unsi
 void VelvetReverb::setReverberationTime(float newReverberationTimeS)
 {
     reverberationTimeS = std::fmax(newReverberationTimeS, 0.f);
-    reverberationTimeRamp.setTarget(reverberationTimeS);
+    //reverberationTimeRamp.setTarget(reverberationTimeS);
 }
 
 void VelvetReverb::setNumPulses(unsigned int newNumPulses)
 {
     numPulses = std::max(newNumPulses, 0u);
+}
+
+void VelvetReverb::computeDelays(unsigned int numChannels)
+{
+    unsigned int delayTimeSamples = static_cast<unsigned int>(reverberationTimeS * sampleRate);
+    multiTapDelayLine.computeDelays(delayTimeSamples, numPulses, numChannels);
 }

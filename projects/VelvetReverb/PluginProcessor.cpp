@@ -22,8 +22,7 @@ static const std::vector<mrta::ParameterInfo> parameterInfos
 //==============================================================================
 VelvetReverbAudioProcessor::VelvetReverbAudioProcessor() : 
     parameterManager(*this, ProjectInfo::projectName, parameterInfos),
-    velvetReverb(960000, 2000, 2)
-
+    velvetReverb(Param::Ranges::ReverberationTimeMax * 48000, Param::Ranges::NumPulsesMax, 2)
 {
 
     
@@ -31,12 +30,14 @@ VelvetReverbAudioProcessor::VelvetReverbAudioProcessor() :
     [this] (float newValue, bool /*force*/)
     {
         velvetReverb.setReverberationTime(newValue);
+        velvetReverb.computeDelays(fxBuffer.getNumChannels());
     });
     
     parameterManager.registerParameterCallback(Param::ID::NumPulses,
     [this] (float newValue, bool /*force*/)
     {
         velvetReverb.setNumPulses(newValue);
+        velvetReverb.computeDelays(fxBuffer.getNumChannels());
     });
 }
 
