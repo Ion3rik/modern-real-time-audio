@@ -159,13 +159,12 @@ void VelvetReverbAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     const unsigned int numChannels { static_cast<unsigned int>(buffer.getNumChannels()) };
     const unsigned int numSamples { static_cast<unsigned int>(buffer.getNumSamples()) };
 
-    for (int ch = 0; ch < static_cast<int>(numChannels); ++ch)
-        fxBuffer.copyFrom(ch, 0, buffer, ch, 0, static_cast<int>(numSamples));
+    //for (int ch = 0; ch < static_cast<int>(numChannels); ++ch)
+    //    fxBuffer.copyFrom(ch, 0, buffer, ch, 0, static_cast<int>(numSamples));
 
-    velvetReverb.process(fxBuffer.getArrayOfWritePointers(), fxBuffer.getArrayOfReadPointers(), numChannels, numSamples);
-
-    for (int ch = 0; ch < static_cast<int>(numChannels); ++ch)
-        buffer.addFrom(ch, 0, fxBuffer, ch, 0, static_cast<int>(numSamples));
+    velvetReverb.process(buffer.getArrayOfWritePointers(), buffer.getArrayOfReadPointers(), numChannels, numSamples);
+    //for (int ch = 0; ch < static_cast<int>(numChannels); ++ch)
+    //   buffer.addFrom(ch, 0, fxBuffer, ch, 0, static_cast<int>(numSamples));
 }
 
 //==============================================================================

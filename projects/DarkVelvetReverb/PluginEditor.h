@@ -14,11 +14,11 @@
 //==============================================================================
 /**
 */
-class VelvetReverbAudioProcessorEditor  : public juce::AudioProcessorEditor
+class DarkVelvetReverbAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
-    VelvetReverbAudioProcessorEditor (VelvetReverbAudioProcessor&);
-    ~VelvetReverbAudioProcessorEditor() override;
+    DarkVelvetReverbAudioProcessorEditor (DarkVelvetReverbAudioProcessor&);
+    ~DarkVelvetReverbAudioProcessorEditor() override;
 
     //==============================================================================
     void paint (juce::Graphics&) override;
@@ -27,8 +27,8 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    VelvetReverbAudioProcessor& audioProcessor;
+    DarkVelvetReverbAudioProcessor& audioProcessor;
     mrta::GenericParameterEditor genericParameterEditor;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VelvetReverbAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DarkVelvetReverbAudioProcessorEditor)
 };

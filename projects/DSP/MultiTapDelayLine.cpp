@@ -63,23 +63,29 @@ void MultiTapDelayLine::process(float* const* output, const float* const* input,
     const unsigned int delayTaps = numPulses;
 
     numChannels = std::min(numChannels, static_cast<unsigned int>(delayBuffer.size()));
-    //unsigned int m = static_cast<unsigned int>(delayTimes[0].back());
-    for (unsigned int ch = 0; ch < numChannels; ++ch)
+
+    unsigned int workingWriteIndex { writeIndex };
+
+for (unsigned int m = 0; m < numPulses; ++m) // loop through each pulse
+{
+    unsigned int workingReadIndex { (workingWriteIndex + delayBufferSize - delayTimes[m]) % delayBufferSize };
+
+    for (unsigned int n = 0; n < numSamples; ++n) // loop through each sample
     {
-        unsigned int workingWriteIndex { writeIndex };
-        for (unsigned int n = 0; n < numSamples; ++n) // loop through each sample
+        const float x = input[0][n]; // lets take only mono input
+
+        for (unsigned int ch = 0; ch < numChannels; ++ch)
         {
-            const float x = input[ch][n];
-            for (unsigned int m = 0; m < delayTaps; m++) // loop through each pulse
-            {   
-                unsigned int workingReadIndex { (workingWriteIndex + delayBufferSize - delayTimes[m]) % delayBufferSize };
-                output[ch][n] += delayGains[ch][m] * delayBuffer[workingReadIndex];
-            }
-            delayBuffer[workingWriteIndex] = x; // write to the delay line
-            ++workingWriteIndex; workingWriteIndex %= delayBufferSize; // increment the working write index
-            
+            output[ch][n] += delayGains[ch][m] * delayBuffer[workingReadIndex];
         }
+        if (m == 0)
+            delayBuffer[workingWriteIndex] = x; // write to the delay line
+        ++workingWriteIndex; workingWriteIndex %= delayBufferSize; // increment the working write index
+        ++workingReadIndex; workingReadIndex %= delayBufferSize; // increment the working write index
     }
+}
+
+    
 
     writeIndex += numSamples; writeIndex %= delayBufferSize;
 }
@@ -219,14 +225,17 @@ void MultiTapDelayLine::computeDelays(unsigned int totalDelay, unsigned int newN
     // Define a uniform distribution in the range [0, 1]
     std::uniform_real_distribution<> dis(0.0, 1.0);
     
-    for (unsigned int ch = 0; ch < numChannels; ++ch)
+    
+    for (unsigned int m = 0; m < newNumTaps; m++)
     {
-        for (unsigned int m = 0; m < newNumTaps; m++)
+        // Pulse location are same for all channels
+        float r1 = dis(gen);
+        delayTimes[m] = roundf( m * Td + r1 * (Td-1));
+        float r2 = dis(gen);
+        // Pulse signs are randmoized between different channels
+        for (unsigned int ch = 0; ch < numChannels; ++ch)
         {
-            float r1 = dis(gen);
-            float r2 = dis(gen);
-            delayTimes[m] = roundf( m * Td + r1 * (Td-1));
-            delayGains[ch][m] = roundf( 2.f * r2 - 1.f) * exp(-alpha * delayTimes[m]); // sign * exponential decay term
+            delayGains[ch][m] = roundf( 2.f * r2 - 1.f);// * exp(-alpha * delayTimes[m]); // sign * exponential decay term
         }
     }
 

@@ -10,7 +10,6 @@
 
 #include <JuceHeader.h>
 #include "DarkVelvetReverb.h"
-#include "VelvetReverb.h"
 
 //==============================================================================
 /**
@@ -47,15 +46,15 @@ namespace Param
     
     }
 }
-class VelvetReverbAudioProcessor  : public juce::AudioProcessor
+class DarkVelvetReverbAudioProcessor  : public juce::AudioProcessor
                             #if JucePlugin_Enable_ARA
                              , public juce::AudioProcessorARAExtension
                             #endif
 {
 public:
     //==============================================================================
-    VelvetReverbAudioProcessor();
-    ~VelvetReverbAudioProcessor() override;
+    DarkVelvetReverbAudioProcessor();
+    ~DarkVelvetReverbAudioProcessor() override;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -94,9 +93,9 @@ public:
 
 private:
     mrta::ParameterManager parameterManager;
-    DSP::DarkVelvetReverb velvetReverb;
+    DSP::DarkVelvetReverb darkVelvetReverb;
     
     juce::AudioBuffer<float> fxBuffer;
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VelvetReverbAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DarkVelvetReverbAudioProcessor)
 };

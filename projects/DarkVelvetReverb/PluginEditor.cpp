@@ -10,7 +10,7 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-VelvetReverbAudioProcessorEditor::VelvetReverbAudioProcessorEditor (VelvetReverbAudioProcessor& p)
+DarkVelvetReverbAudioProcessorEditor::DarkVelvetReverbAudioProcessorEditor (DarkVelvetReverbAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p), genericParameterEditor(audioProcessor.getParameterManager())
 {
     int height = static_cast<int>(audioProcessor.getParameterManager().getParameters().size()) * genericParameterEditor.parameterWidgetHeight;
@@ -18,18 +18,18 @@ VelvetReverbAudioProcessorEditor::VelvetReverbAudioProcessorEditor (VelvetReverb
     addAndMakeVisible(genericParameterEditor);
 }
 
-VelvetReverbAudioProcessorEditor::~VelvetReverbAudioProcessorEditor()
+DarkVelvetReverbAudioProcessorEditor::~DarkVelvetReverbAudioProcessorEditor()
 {
 }
 
 //==============================================================================
-void VelvetReverbAudioProcessorEditor::paint (juce::Graphics& g)
+void DarkVelvetReverbAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 }
 
-void VelvetReverbAudioProcessorEditor::resized()
+void DarkVelvetReverbAudioProcessorEditor::resized()
 {
     genericParameterEditor.setBounds(getLocalBounds());
 }

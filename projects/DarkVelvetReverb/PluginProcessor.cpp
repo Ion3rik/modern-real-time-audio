@@ -20,38 +20,38 @@ static const std::vector<mrta::ParameterInfo> parameterInfos
 };
 
 //==============================================================================
-VelvetReverbAudioProcessor::VelvetReverbAudioProcessor() : 
+DarkVelvetReverbAudioProcessor::DarkVelvetReverbAudioProcessor() : 
     parameterManager(*this, ProjectInfo::projectName, parameterInfos),
-    velvetReverb(Param::Ranges::ReverberationTimeMax * 48000, Param::Ranges::NumPulsesMax, 2)
+    darkVelvetReverb(Param::Ranges::ReverberationTimeMax * 48000, Param::Ranges::NumPulsesMax, 2)
 {
 
     
     parameterManager.registerParameterCallback(Param::ID::ReverberationTime,
     [this] (float newValue, bool /*force*/)
     {
-        velvetReverb.setReverberationTime(newValue);
-        velvetReverb.computeDelays(fxBuffer.getNumChannels());
+        darkVelvetReverb.setReverberationTime(newValue);
+        darkVelvetReverb.computeDelays(fxBuffer.getNumChannels());
     });
     
     parameterManager.registerParameterCallback(Param::ID::NumPulses,
     [this] (float newValue, bool /*force*/)
     {
-        velvetReverb.setNumPulses(newValue);
-        velvetReverb.computeDelays(fxBuffer.getNumChannels());
+        darkVelvetReverb.setNumPulses(newValue);
+        darkVelvetReverb.computeDelays(fxBuffer.getNumChannels());
     });
 }
 
-VelvetReverbAudioProcessor::~VelvetReverbAudioProcessor()
+DarkVelvetReverbAudioProcessor::~DarkVelvetReverbAudioProcessor()
 {
 }
 
 //==============================================================================
-const juce::String VelvetReverbAudioProcessor::getName() const
+const juce::String DarkVelvetReverbAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool VelvetReverbAudioProcessor::acceptsMidi() const
+bool DarkVelvetReverbAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -60,7 +60,7 @@ bool VelvetReverbAudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool VelvetReverbAudioProcessor::producesMidi() const
+bool DarkVelvetReverbAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -69,7 +69,7 @@ bool VelvetReverbAudioProcessor::producesMidi() const
    #endif
 }
 
-bool VelvetReverbAudioProcessor::isMidiEffect() const
+bool DarkVelvetReverbAudioProcessor::isMidiEffect() const
 {
    #if JucePlugin_IsMidiEffect
     return true;
@@ -78,41 +78,41 @@ bool VelvetReverbAudioProcessor::isMidiEffect() const
    #endif
 }
 
-double VelvetReverbAudioProcessor::getTailLengthSeconds() const
+double DarkVelvetReverbAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int VelvetReverbAudioProcessor::getNumPrograms()
+int DarkVelvetReverbAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int VelvetReverbAudioProcessor::getCurrentProgram()
+int DarkVelvetReverbAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void VelvetReverbAudioProcessor::setCurrentProgram (int index)
+void DarkVelvetReverbAudioProcessor::setCurrentProgram (int index)
 {
 }
 
-const juce::String VelvetReverbAudioProcessor::getProgramName (int index)
+const juce::String DarkVelvetReverbAudioProcessor::getProgramName (int index)
 {
     return {};
 }
 
-void VelvetReverbAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void DarkVelvetReverbAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
 }
 
 //==============================================================================
-void VelvetReverbAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void DarkVelvetReverbAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     const unsigned int numChannels { static_cast<unsigned int>(std::max(getMainBusNumInputChannels(), getMainBusNumOutputChannels())) };
     
-    velvetReverb.prepare(sampleRate, 48000, 2000, numChannels);
+    darkVelvetReverb.prepare(sampleRate, 48000, 2000, numChannels);
     
     parameterManager.updateParameters(true);
     
@@ -120,13 +120,13 @@ void VelvetReverbAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
     fxBuffer.clear();
 }
 
-void VelvetReverbAudioProcessor::releaseResources()
+void DarkVelvetReverbAudioProcessor::releaseResources()
 {
-    velvetReverb.clear();
+    darkVelvetReverb.clear();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool VelvetReverbAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool DarkVelvetReverbAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
@@ -151,7 +151,7 @@ bool VelvetReverbAudioProcessor::isBusesLayoutSupported (const BusesLayout& layo
 }
 #endif
 
-void VelvetReverbAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void DarkVelvetReverbAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
     parameterManager.updateParameters();
@@ -162,32 +162,32 @@ void VelvetReverbAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (int ch = 0; ch < static_cast<int>(numChannels); ++ch)
         fxBuffer.copyFrom(ch, 0, buffer, ch, 0, static_cast<int>(numSamples));
 
-    velvetReverb.process(fxBuffer.getArrayOfWritePointers(), fxBuffer.getArrayOfReadPointers(), numChannels, numSamples);
+    darkVelvetReverb.process(fxBuffer.getArrayOfWritePointers(), fxBuffer.getArrayOfReadPointers(), numChannels, numSamples);
 
     for (int ch = 0; ch < static_cast<int>(numChannels); ++ch)
         buffer.addFrom(ch, 0, fxBuffer, ch, 0, static_cast<int>(numSamples));
 }
 
 //==============================================================================
-bool VelvetReverbAudioProcessor::hasEditor() const
+bool DarkVelvetReverbAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-juce::AudioProcessorEditor* VelvetReverbAudioProcessor::createEditor()
+juce::AudioProcessorEditor* DarkVelvetReverbAudioProcessor::createEditor()
 {
-    return new VelvetReverbAudioProcessorEditor (*this);
+    return new DarkVelvetReverbAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void VelvetReverbAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void DarkVelvetReverbAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 }
 
-void VelvetReverbAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void DarkVelvetReverbAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
@@ -197,5 +197,5 @@ void VelvetReverbAudioProcessor::setStateInformation (const void* data, int size
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new VelvetReverbAudioProcessor();
+    return new DarkVelvetReverbAudioProcessor();
 }
