@@ -4,6 +4,7 @@
 static const std::vector<mrta::ParameterInfo> parameters
 {
     { Param::ID::Trigger,      Param::Name::Trigger,      Param::Range::TriggerOff, Param::Range::TriggerOn, false },
+    { Param::ID::Analog,       Param::Name::Analog,       Param::Range::AnalogOff,  Param::Range::AnalogOn, false },
     { Param::ID::AttackTime,   Param::Name::AttackTime,   Param::Unit::Ms,  50.0f, Param::Range::TimeMin,    Param::Range::TimeMax,    Param::Range::TimeInc,    Param::Range::TimeSkw },
     { Param::ID::DecayTime,    Param::Name::DecayTime,    Param::Unit::Ms,  25.0f, Param::Range::TimeMin,    Param::Range::TimeMax,    Param::Range::TimeInc,    Param::Range::TimeSkw },
     { Param::ID::SustainLevel, Param::Name::SustainLevel, "",                0.7f, Param::Range::SustainMin, Param::Range::SustainMax, Param::Range::SustainInc, Param::Range::SustainSkw },
@@ -20,6 +21,12 @@ EnvelopeGeneratorAudioProcessor::EnvelopeGeneratorAudioProcessor() :
             env.start();
         else
             env.end();
+    });
+
+    parameterManager.registerParameterCallback(Param::ID::Analog,
+    [this] (float value, bool /*force*/)
+    {
+        env.setAnalogStyle(value > 0.5f);
     });
 
     parameterManager.registerParameterCallback(Param::ID::AttackTime,

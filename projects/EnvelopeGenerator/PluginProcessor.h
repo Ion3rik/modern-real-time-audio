@@ -8,7 +8,8 @@ namespace Param
 {
     namespace ID
     {
-        static const juce::String Trigger { "trigger" };
+        static const juce::String Trigger { "gate" };
+        static const juce::String Analog { "analog" };
         static const juce::String AttackTime { "attack_time" };
         static const juce::String DecayTime { "decay_time" };
         static const juce::String SustainLevel { "sustain_level" };
@@ -17,7 +18,8 @@ namespace Param
 
     namespace Name
     {
-        static const juce::String Trigger { "Trigger" };
+        static const juce::String Trigger { "Gate" };
+        static const juce::String Analog { "Analog Style" };
         static const juce::String AttackTime { "Attack Time" };
         static const juce::String DecayTime { "Decay Time" };
         static const juce::String SustainLevel { "Sustain Level" };
@@ -43,6 +45,9 @@ namespace Param
 
         static const juce::String TriggerOn { "ON" };
         static const juce::String TriggerOff { "OFF" };
+
+        static const juce::String AnalogOn { "Analog" };
+        static const juce::String AnalogOff { "Digital" };
     }
 }
 

@@ -300,6 +300,7 @@ add_plugin(svf
         ${svf_source}/PluginEditor.cpp
         ${svf_source}/PluginProcessor.cpp
         ${dsp_source}/StateVariableFilter.cpp
+        ${dsp_source}/Oscillator.cpp
     INCLUDE_DIRS
         ${dsp_source}
         ${svf_source})
@@ -321,3 +322,35 @@ add_plugin(darkvelvetreverb
     INCLUDE_DIRS
         ${dsp_source}
         ${darkvelvetreverb_source})
+
+# RING MOD HW
+set(rm_source ${CMAKE_CURRENT_SOURCE_DIR}/HW/LiRingMod)
+
+add_plugin(rm
+    VERSION 0.1.0
+    PLUGIN_NAME "rm"
+    PROD_NAME rm
+    PROD_CODE rmhw
+    SYNTH FALSE
+    SOURCES
+        ${rm_source}/PluginEditor.cpp
+        ${rm_source}/PluginProcessor.cpp
+    INCLUDE_DIRS
+        ${rm_source})
+
+# DELAY HW
+set(fbDelay_source ${CMAKE_CURRENT_SOURCE_DIR}/HW/KallinenDelay)
+
+add_plugin(fbDelay
+    VERSION 0.1.0
+    PLUGIN_NAME "FB delay"
+    PROD_NAME fbDelay
+    PROD_CODE fbdl
+    SYNTH FALSE
+    SOURCES
+        ${fbDelay_source}/PluginEditor.cpp
+        ${fbDelay_source}/PluginProcessor.cpp
+        ${dsp_source}/DelayLine.cpp
+    INCLUDE_DIRS
+        ${fbDelay_source}
+        ${dsp_source})

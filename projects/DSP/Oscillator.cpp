@@ -96,7 +96,7 @@ float Oscillator::process()
 
 void Oscillator::setFrequency(float freqHz)
 {
-    frequency = std::clamp(freqHz, 20.f, 10000.f);
+    frequency = std::clamp(freqHz, 0.1f, 10000.f);
 
     phaseInc = static_cast<float>(1.0 / sampleRate) * frequency;
     differentiatorCoeff = static_cast<float>(sampleRate) / (4.f * frequency * (1.f - frequency / static_cast<float>(sampleRate)));

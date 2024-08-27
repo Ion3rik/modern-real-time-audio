@@ -23,6 +23,11 @@ void EnvelopeGenerator::prepare(double newSampleRate)
     decayTimeSamples = std::rint(decayTimeMs * static_cast<float>(sampleRate * 0.001));
     releaseTimeSamples = std::rint(releaseTimeMs * static_cast<float>(sampleRate * 0.001));
 
+    // update leaky integrator coeffs with new sample rate
+    attackLeakyIntCoeff = std::exp(-1.f / static_cast<float>(attackTimeSamples));
+    decayLeakyIntCoeff = std::exp(-1.f / static_cast<float>(decayTimeSamples));
+    releaseLeakyIntCoeff = std::exp(-1.f / static_cast<float>(releaseTimeSamples));
+
     // reset counters and state
     state = OFF;
     attackSamplesCounter = 0;
@@ -32,66 +37,10 @@ void EnvelopeGenerator::prepare(double newSampleRate)
 
 void EnvelopeGenerator::process(float* output, unsigned int numSamples)
 {
-    for (unsigned int n = 0; n < numSamples; ++n)
-    {
-        switch (state)
-        {
-        case OFF:
-            {
-                currentEnvelope = 0.f;
-            }
-            break;
-
-        case ATTACK:
-            if (attackSamplesCounter < attackTimeSamples)
-            {
-                currentEnvelope += (1.f - currentEnvelope) / static_cast<float>(attackTimeSamples - attackSamplesCounter);
-                currentEnvelope = std::fmin(currentEnvelope, 1.f);
-                ++attackSamplesCounter;
-            }
-            else
-            {
-                attackSamplesCounter = 0;
-                state = DECAY;
-            }
-            break;
-
-        case DECAY:
-            if (decaySamplesCounter < decayTimeSamples)
-            {
-                currentEnvelope += (sustainLevel - currentEnvelope) / static_cast<float>(decayTimeSamples - decaySamplesCounter);
-                ++decaySamplesCounter;
-            }
-            else
-            {
-                decaySamplesCounter = 0;
-                state = SUSTAIN;
-            }
-            break;
-
-        case SUSTAIN:
-            {
-            }
-            break;
-
-        case RELEASE:
-            if (releaseSamplesCounter < releaseTimeSamples)
-            {
-                currentEnvelope += (0.f - currentEnvelope) / static_cast<float>(releaseTimeSamples - releaseSamplesCounter);
-                ++releaseSamplesCounter;
-            }
-            else
-            {
-                releaseSamplesCounter = 0;
-                state = OFF;
-            }
-            break;
-
-        default: break;
-        }
-
-        output[n] = currentEnvelope;
-    }
+    if (isAnalogStyle)
+        doAnalog(output, numSamples);
+    else
+        doDigital(output, numSamples);
 }
 
 void EnvelopeGenerator::start()
@@ -110,10 +59,28 @@ void EnvelopeGenerator::end()
     releaseSamplesCounter = 0;
 }
 
+void EnvelopeGenerator::setAnalogStyle(bool newAnalogStyle)
+{
+    isAnalogStyle = newAnalogStyle;
+
+    attackTimeSamples = std::rint(attackTimeMs * static_cast<float>(sampleRate * 0.001));
+    decayTimeSamples = std::rint(decayTimeMs * static_cast<float>(sampleRate * 0.001));
+    releaseTimeSamples = std::rint(releaseTimeMs * static_cast<float>(sampleRate * 0.001));
+
+    attackSamplesCounter = 0;
+    decaySamplesCounter = 0;
+    releaseSamplesCounter = 0;
+
+    attackLeakyIntCoeff = std::exp(-1.f / static_cast<float>(attackTimeSamples));
+    decayLeakyIntCoeff = std::exp(-1.f / static_cast<float>(decayTimeSamples));
+    releaseLeakyIntCoeff = std::exp(-1.f / static_cast<float>(releaseTimeSamples));
+}
+
 void EnvelopeGenerator::setAttackTime(float newAttackTimeMs)
 {
     attackTimeMs = std::fmax(newAttackTimeMs, 0.1f);
     attackTimeSamples = std::rint(attackTimeMs * static_cast<float>(sampleRate * 0.001));
+    attackLeakyIntCoeff = std::exp(-1.f / static_cast<float>(attackTimeSamples));
 
     if (state == ATTACK)
         attackSamplesCounter = std::min(attackTimeSamples - 1, attackSamplesCounter);
@@ -123,6 +90,7 @@ void EnvelopeGenerator::setDecayTime(float newDecayTimeMs)
 {
     decayTimeMs = std::fmax(newDecayTimeMs, 0.1f);
     decayTimeSamples = std::rint(decayTimeMs * static_cast<float>(sampleRate * 0.001));
+    decayLeakyIntCoeff = std::exp(-1.f / static_cast<float>(decayTimeSamples));
 
     if (state == DECAY)
         decaySamplesCounter = std::min(decayTimeSamples - 1, decaySamplesCounter);
@@ -137,9 +105,137 @@ void EnvelopeGenerator::setReleaseTime(float newReleaseTimeMs)
 {
     releaseTimeMs = std::fmax(newReleaseTimeMs, 0.1f);
     releaseTimeSamples = std::rint(releaseTimeMs * static_cast<float>(sampleRate * 0.001));
+    releaseLeakyIntCoeff = std::exp(-1.f / static_cast<float>(releaseTimeSamples));
 
     if (state == RELEASE)
         releaseSamplesCounter = std::min(releaseTimeSamples - 1, releaseSamplesCounter);
+}
+
+void EnvelopeGenerator::doDigital(float* output, unsigned int numSamples)
+{
+    for (unsigned int n = 0; n < numSamples; ++n)
+    {
+        switch (state)
+        {
+        case OFF:
+            {
+                currentEnvelope = 0.f;
+            }
+            break;
+
+        case ATTACK:
+            if (attackSamplesCounter < attackTimeSamples)
+            {
+                currentEnvelope += (1.f - currentEnvelope) / std::fmax(static_cast<float>(attackTimeSamples - attackSamplesCounter), 1.f);
+                currentEnvelope = std::fmin(currentEnvelope, 1.f);
+                ++attackSamplesCounter;
+            }
+            else
+            {
+                attackSamplesCounter = 0;
+                state = DECAY;
+            }
+            break;
+
+        case DECAY:
+            if (decaySamplesCounter < decayTimeSamples)
+            {
+                currentEnvelope += (sustainLevel - currentEnvelope) / std::fmax(static_cast<float>(decayTimeSamples - decaySamplesCounter), 1.f);
+                ++decaySamplesCounter;
+            }
+            else
+            {
+                decaySamplesCounter = 0;
+                state = SUSTAIN;
+            }
+            break;
+
+        case SUSTAIN:
+            {
+                currentEnvelope = sustainLevel;
+            }
+            break;
+
+        case RELEASE:
+            if (releaseSamplesCounter < releaseTimeSamples)
+            {
+                currentEnvelope += (0.f - currentEnvelope) / std::fmax(static_cast<float>(releaseTimeSamples - releaseSamplesCounter), 1.f);
+                ++releaseSamplesCounter;
+            }
+            else
+            {
+                releaseSamplesCounter = 0;
+                state = OFF;
+            }
+            break;
+
+        default: break;
+        }
+
+        output[n] = currentEnvelope;
+    }
+}
+
+void EnvelopeGenerator::doAnalog(float* output, unsigned int numSamples)
+{
+    for (unsigned int n = 0; n < numSamples; ++n)
+    {
+        switch (state)
+        {
+        case OFF:
+            {
+                currentEnvelope = 0.f;
+            }
+            break;
+
+        case ATTACK:
+            if (std::fabs(currentEnvelope - 1.f) > delta)
+            {
+                currentEnvelope = (currentEnvelope - 1.1f) * attackLeakyIntCoeff + 1.1f;
+                currentEnvelope = std::fmin(currentEnvelope, 1.f);
+            }
+            else
+            {
+                currentEnvelope = 1.f;
+                state = DECAY;
+            }
+            break;
+
+        case DECAY:
+            if (std::fabs(currentEnvelope - sustainLevel) > delta)
+            {
+                currentEnvelope = (currentEnvelope - sustainLevel) * decayLeakyIntCoeff + sustainLevel;
+            }
+            else
+            {
+                currentEnvelope = sustainLevel;
+                state = SUSTAIN;
+            }
+            break;
+
+        case SUSTAIN:
+            {
+                currentEnvelope = sustainLevel;
+            }
+            break;
+
+        case RELEASE:
+            if (std::fabs(currentEnvelope - 0.f) > delta)
+            {
+                currentEnvelope = (currentEnvelope - 0.f) * releaseLeakyIntCoeff + 0.f;
+            }
+            else
+            {
+                currentEnvelope = 0.f;
+                state = OFF;
+            }
+            break;
+
+        default: break;
+        }
+
+        output[n] = currentEnvelope;
+    }
 }
 
 }

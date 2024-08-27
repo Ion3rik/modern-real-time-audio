@@ -23,6 +23,7 @@ public:
     // trigger the ending of the envelope - note off
     void end();
 
+    void setAnalogStyle(bool isAnalogStyle);
     void setAttackTime(float attackTimeMs);
     void setDecayTime(float decayTimeMs);
     void setSustainLevel(float sustainLevelLinear);
@@ -47,6 +48,12 @@ private:
 
     float currentEnvelope { 0.f };
 
+    float attackLeakyIntCoeff { 0.f };
+    float decayLeakyIntCoeff { 0.f };
+    float releaseLeakyIntCoeff { 0.f };
+
+    bool isAnalogStyle { false };
+
     enum EnvelopeState : unsigned int
     {
         OFF = 0,
@@ -57,6 +64,11 @@ private:
     };
 
     EnvelopeState state { OFF };
+
+    static constexpr float delta { 1e-3 };
+
+    void doDigital(float* output, unsigned int numSamples);
+    void doAnalog(float* output, unsigned int numSamples);
 };
 
 }
