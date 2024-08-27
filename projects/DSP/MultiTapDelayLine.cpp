@@ -15,7 +15,8 @@
 #include <JuceHeader.h>
 #include <random>
 
-
+namespace DSP 
+{
 MultiTapDelayLine::MultiTapDelayLine(unsigned int maxLengthSamples, unsigned int numTaps, unsigned int numChannels)
 {
     delaySamples = maxLengthSamples;
@@ -240,6 +241,5 @@ void MultiTapDelayLine::computeDelays(unsigned int totalDelay, unsigned int newN
     }
 
 }
-
-
+}
 

@@ -12,7 +12,8 @@
 
 #include <vector>
 
-
+namespace DSP
+{
 class MultiTapDelayLine
 {
 public:
@@ -70,4 +71,4 @@ private:
     std::vector<std::vector<float>> delayGains;
     unsigned int writeIndex { 0u };
 };
-
+}

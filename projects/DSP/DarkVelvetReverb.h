@@ -1,7 +1,8 @@
 #pragma once
 
 #include "../DSP/Ramp.h"
-#include "./MultiTapDelayLine.h"
+#include "../DSP/MultiTapDelayLine.h"
+#include "../DSP/Allpole.h"
 
 namespace DSP 
 {
