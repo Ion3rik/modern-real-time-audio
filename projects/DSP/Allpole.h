@@ -9,7 +9,7 @@ namespace DSP
 class Allpole
 {
 public:
-    Allpole(unsigned int numSections, unsigned int maxNumChannels);
+    Allpole(unsigned int filterOrder, unsigned int maxNumChannels);
     Allpole();
     ~Allpole();
 
@@ -19,9 +19,6 @@ public:
     Allpole(Allpole&&) = delete;
     const Allpole& operator=(Allpole&&) = delete;
 
-    static const unsigned int CoeffsPerSection = 5;
-    static const unsigned int StatesPerSection = 4;
-
     // Clear all states
     void clear();
 
@@ -29,12 +26,8 @@ public:
     // Calling this method will clear the states
     void reallocateChannels(unsigned int maxNumChannels);
 
-    // Reallocate coefficient and state storage
-    // Calling this method will clear the coefficients and states
-    void reallocateSections(unsigned int numSections);
-
-    // Set new coeffs to a section
-    void setSectionCoeffs(const std::array<float, CoeffsPerSection>& newSectionCoeffs, unsigned int section);
+    // Set new coeffs
+    void setCoeffs(const std::vector<float>& newCoeffs);
 
     // Process audio
     // This method can be called with a lower number of channels than allocated
@@ -47,15 +40,12 @@ public:
     // return the number of currently allocated channels
     unsigned int getAllocatedChannels() const noexcept { return allocatedChannels; }
 
-    // return the number of currently allocated sections
-    unsigned int getAllocatedSections() const noexcept { return allocatedSections; }
-
 private:
     unsigned int allocatedChannels { 0 };
-    unsigned int allocatedSections { 0 };
+    unsigned int filterOrder { 0 };
 
-    // vector of coeffs of all sections
-    // [sos0_b0, sos0_b1, sos0_b2, sos0_a1, sos0_a2, sos1_b0, sos1_b1, ...]
+    // vector of coeffs
+    // [b0, a1, a2, a3... aN]
     std::vector<float> coeffs;
 
     // vector of states of all channels and sections
