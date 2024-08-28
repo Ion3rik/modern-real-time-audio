@@ -26,12 +26,7 @@ void DarkVelvetReverb::prepare(double newSampleRate, unsigned int maxLengthSampl
     
     multiTapDelayLine.prepare(maxLengthSamples, maxTaps, numChannels);
     
-    unsigned int rt = round(reverberationTimeS * sampleRate);
-    
-    multiTapDelayLine.computeDelays(rt, multiTapDelayLine.getNumPulses(), numChannels);
-    
-    reverberationTimeRamp.prepare(newSampleRate, true, reverberationTimeS);
-    
+
 }
 
 void DarkVelvetReverb::process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples)

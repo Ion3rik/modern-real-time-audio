@@ -339,7 +339,7 @@ add_plugin(rm
         ${rm_source})
 
 # DELAY HW
-set(fbDelay_source ${CMAKE_CURRENT_SOURCE_DIR}/HW/KallinenDelay)
+set(fbDelay_source ${CMAKE_CURRENT_SOURCE_DIR}/HW/LiDelay)
 
 add_plugin(fbDelay
     VERSION 0.1.0
@@ -351,6 +351,7 @@ add_plugin(fbDelay
         ${fbDelay_source}/PluginEditor.cpp
         ${fbDelay_source}/PluginProcessor.cpp
         ${dsp_source}/DelayLine.cpp
+        ${fbDelay_source}/Flanger.cpp
     INCLUDE_DIRS
         ${fbDelay_source}
         ${dsp_source})

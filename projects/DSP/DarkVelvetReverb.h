@@ -3,6 +3,7 @@
 #include "../DSP/Ramp.h"
 #include "../DSP/MultiTapDelayLine.h"
 #include "../DSP/Allpole.h"
+#include "ParametricEqualizer.h"
 
 namespace DSP 
 {
@@ -32,26 +33,31 @@ public:
     // Process audio with the current settings
     void process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples);
     
-    // Set a broadband reverberation time in seconds
-    void setReverberationTime(float newReverberationTimeS);
+    // Modify the base reverberation time by stretching the pulse sequence
+    void setRtModifier(float newModifier);
     
     // Set number of velvet pulses
     void setNumPulses(unsigned int newNumPulses);
 
     void computeDelays(unsigned int numChannels);
+
+    void loadParams(std::string pathToParamFile);
     
 
 private:
     double sampleRate {48000.0};
     
-    MultiTapDelayLine multiTapDelayLine;
-    
-    // Parameter ramps
-    DSP::Ramp<float> reverberationTimeRamp;
+    DSP::MultiTapDelayLine multiTapDelayLine;
+    float rtModifier {1.f};
     
     // Parameter values
-    float reverberationTimeS {1.f};
     unsigned int numPulses {100u};
+    std::vector<DSP::Allpole> dictionaryFilter;
+    DSP::Allpole postFilter;
+    DSP::ParametricEqualizer eq;
+    std::vector<unsigned int> filterRouting;
+    std::vector<unsigned int> pulseLocation;
+    std::vector<float> pulseGain;
 };
 
 }

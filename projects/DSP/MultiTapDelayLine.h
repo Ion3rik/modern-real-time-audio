@@ -60,14 +60,16 @@ public:
     void process(float* audioOutput, const float* audioInput, const float* modInput, unsigned int numChannels);
     */
 
-    // Set the current delay times in samples and their gains
     void computeDelays(unsigned int totalDelay, unsigned int newNumTaps, unsigned int numChannels);
+
+     // Set the current delay times in samples and their gains
+    void setDelays(const unsigned int* newDelays, const float* const* newGains);
 
 private:
     unsigned int numPulses { 100u };
     unsigned int delaySamples { 48000u };
     std::vector<float> delayBuffer;
-    std::vector<unsigned int> delayTimes;
+    std::vector<std::vector<unsigned int>> delayTimes;
     std::vector<std::vector<float>> delayGains;
     unsigned int writeIndex { 0u };
 };

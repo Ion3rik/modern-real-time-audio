@@ -21,10 +21,10 @@ MultiTapDelayLine::MultiTapDelayLine(unsigned int maxLengthSamples, unsigned int
 {
     delaySamples = maxLengthSamples;
     delayBuffer.resize(maxLengthSamples, 0.f);
-    delayTimes.resize(numTaps, 0u);
     for (unsigned int ch = 0; ch < numChannels; ++ch)
     {
         delayGains.emplace_back(numTaps, 0.f);
+        delayTimes.emplace_back(numTaps, 0u);
     }
     
 }
@@ -37,7 +37,8 @@ void MultiTapDelayLine::clear()
 {
     //for (auto& b : delayBuffer)
     delayBuffer.assign(delayBuffer.size(),0.f);
-    delayTimes.assign(delayTimes.size(), 0u);
+    for (auto& t : delayTimes)
+        std::fill(t.begin(), t.end(), 0.f);
     
     for (auto& g : delayGains)
         std::fill(g.begin(), g.end(), 0.f);
@@ -51,10 +52,10 @@ void MultiTapDelayLine::prepare(unsigned int maxLengthSamples, unsigned int maxT
     delayTimes.clear();
     delayGains.clear();
     delayBuffer.resize(maxLengthSamples, 0.f);
-    delayTimes.resize(maxTaps, 0u);
     for (unsigned int ch = 0; ch < numChannels; ++ch)
     {
         delayGains.emplace_back(maxTaps, 0.f);
+        delayTimes.emplace_back(maxTaps, 0u);
     }
 }
 
@@ -64,30 +65,27 @@ void MultiTapDelayLine::process(float* const* output, const float* const* input,
     const unsigned int delayTaps = numPulses;
 
     numChannels = std::min(numChannels, static_cast<unsigned int>(delayBuffer.size()));
-
     unsigned int workingWriteIndex { writeIndex };
-
-for (unsigned int m = 0; m < numPulses; ++m) // loop through each pulse
-{
-    unsigned int workingReadIndex { (workingWriteIndex + delayBufferSize - delayTimes[m]) % delayBufferSize };
-
-    for (unsigned int n = 0; n < numSamples; ++n) // loop through each sample
+    for (unsigned int ch = 0; ch < numChannels; ++ch)
     {
-        const float x = input[0][n]; // lets take only mono input
-
-        for (unsigned int ch = 0; ch < numChannels; ++ch)
+        for (unsigned int m = 0; m < numPulses; ++m) // loop through each pulse
         {
-            output[ch][n] += delayGains[ch][m] * delayBuffer[workingReadIndex];
+            unsigned int workingReadIndex { (workingWriteIndex + delayBufferSize - delayTimes[ch][m]) % delayBufferSize };
+            float g = delayGains[ch][m]; // read the gain
+
+            for (unsigned int n = 0; n < numSamples; ++n) // loop through each sample
+            {
+                const float x = input[0][n]; // lets take only mono input
+
+                output[ch][n] += g * delayBuffer[workingReadIndex];
+                
+                if (m == 0)
+                    delayBuffer[workingWriteIndex] = x; // write to the delay line
+                ++workingWriteIndex; workingWriteIndex %= delayBufferSize; // increment the working write index
+                ++workingReadIndex; workingReadIndex %= delayBufferSize; // increment the working write index
+            }
         }
-        if (m == 0)
-            delayBuffer[workingWriteIndex] = x; // write to the delay line
-        ++workingWriteIndex; workingWriteIndex %= delayBufferSize; // increment the working write index
-        ++workingReadIndex; workingReadIndex %= delayBufferSize; // increment the working write index
     }
-}
-
-    
-
     writeIndex += numSamples; writeIndex %= delayBufferSize;
 }
 
@@ -212,7 +210,7 @@ void MultiTapDelayLine::computeDelays(unsigned int totalDelay, unsigned int newN
 {
     numChannels = std::min(numChannels, static_cast<unsigned int>(delayGains[0].size()));
     totalDelay = std::min(totalDelay, static_cast<unsigned int>(delayBuffer.size()));
-    newNumTaps = std::min(newNumTaps, static_cast<unsigned int>(delayTimes.size()));
+    newNumTaps = std::min(newNumTaps, static_cast<unsigned int>(delayTimes[0].size()));
     numPulses = newNumTaps;
     
     float alpha = -log(pow(10, -3)) * (1.f / totalDelay);
@@ -229,16 +227,18 @@ void MultiTapDelayLine::computeDelays(unsigned int totalDelay, unsigned int newN
     
     for (unsigned int m = 0; m < newNumTaps; m++)
     {
-        // Pulse location are same for all channels
-        float r1 = dis(gen);
-        delayTimes[m] = roundf( m * Td + r1 * (Td-1));
-        float r2 = dis(gen);
-        // Pulse signs are randmoized between different channels
         for (unsigned int ch = 0; ch < numChannels; ++ch)
         {
-            delayGains[ch][m] = roundf( 2.f * r2 - 1.f);// * exp(-alpha * delayTimes[m]); // sign * exponential decay term
+            float r1 = dis(gen);
+            float r2 = dis(gen);
+            delayTimes[ch][m] = roundf( m * Td + r1 * (Td-1));
+            delayGains[ch][m] = 2 * roundf( r2 ) - 1 * exp(-alpha * delayTimes[ch][m]); // sign * exponential decay term
         }
     }
+
+}
+void MultiTapDelayLine::setDelays(const unsigned int* newDelays, const float* const* newGains)
+{
 
 }
 }
