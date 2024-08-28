@@ -1,13 +1,15 @@
 
 #include "DarkVelvetReverb.h"
 #include "MultiTapDelayLine.h"
+#include "VelvetConvolver.h"
 
 namespace DSP 
 {
-DarkVelvetReverb::DarkVelvetReverb(unsigned int maxLengthSamples, unsigned int maxTaps, unsigned int numChannels) :
-    multiTapDelayLine(maxLengthSamples, maxTaps, numChannels)
+DarkVelvetReverb::DarkVelvetReverb(unsigned int maxLengthSamples, unsigned int maxNumPulses, unsigned int numChannels) :
+    velvetConvolver(maxLengthSamples, maxNumPulses, numChannels)
+    //eq(2u, numChannels)
 {
-
+    
 }
 
 DarkVelvetReverb::~DarkVelvetReverb()
@@ -17,37 +19,28 @@ DarkVelvetReverb::~DarkVelvetReverb()
 
 void DarkVelvetReverb::clear()
 {
-    multiTapDelayLine.clear();
+    velvetConvolver.clear();
 }
 
-void DarkVelvetReverb::prepare(double newSampleRate, unsigned int maxLengthSamples, unsigned int maxTaps, unsigned int numChannels)
+void DarkVelvetReverb::prepare(double newSampleRate, unsigned int maxLengthSamples, unsigned int numChannels)
 {
     sampleRate = newSampleRate;
     
-    multiTapDelayLine.prepare(maxLengthSamples, maxTaps, numChannels);
+    velvetConvolver.prepare(maxLengthSamples, numPulses, numChannels);
     
 
 }
 
 void DarkVelvetReverb::process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples)
 {
-    multiTapDelayLine.process(output, input, numChannels, numSamples); // process in place
+    // For now a simple velvet convolution
+    velvetConvolver.process(output, input, numChannels, numSamples); 
 }
 
-void DarkVelvetReverb::setReverberationTime(float newReverberationTimeS)
+void DarkVelvetReverb::loadParams(std::string pathToParamFile)
 {
-    reverberationTimeS = std::fmax(newReverberationTimeS, 0.f);
-    //reverberationTimeRamp.setTarget(reverberationTimeS);
+    // Set all the member variables from the file
+    
 }
 
-void DarkVelvetReverb::setNumPulses(unsigned int newNumPulses)
-{
-    numPulses = std::max(newNumPulses, 0u);
-}
-
-void DarkVelvetReverb::computeDelays(unsigned int numChannels)
-{
-    unsigned int delayTimeSamples = static_cast<unsigned int>(reverberationTimeS * sampleRate);
-    multiTapDelayLine.computeDelays(delayTimeSamples, numPulses, numChannels);
-}
 }

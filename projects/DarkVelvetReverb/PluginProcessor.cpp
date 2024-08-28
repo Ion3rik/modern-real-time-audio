@@ -29,15 +29,13 @@ DarkVelvetReverbAudioProcessor::DarkVelvetReverbAudioProcessor() :
     parameterManager.registerParameterCallback(Param::ID::ReverberationTime,
     [this] (float newValue, bool /*force*/)
     {
-        darkVelvetReverb.setReverberationTime(newValue);
-        darkVelvetReverb.computeDelays(fxBuffer.getNumChannels());
+
     });
     
     parameterManager.registerParameterCallback(Param::ID::NumPulses,
     [this] (float newValue, bool /*force*/)
     {
-        darkVelvetReverb.setNumPulses(newValue);
-        darkVelvetReverb.computeDelays(fxBuffer.getNumChannels());
+
     });
 }
 
@@ -112,7 +110,7 @@ void DarkVelvetReverbAudioProcessor::prepareToPlay (double sampleRate, int sampl
 {
     const unsigned int numChannels { static_cast<unsigned int>(std::max(getMainBusNumInputChannels(), getMainBusNumOutputChannels())) };
     
-    darkVelvetReverb.prepare(sampleRate, 48000, 2000, numChannels);
+    darkVelvetReverb.prepare(sampleRate, 48000, numChannels);
     
     parameterManager.updateParameters(true);
     
