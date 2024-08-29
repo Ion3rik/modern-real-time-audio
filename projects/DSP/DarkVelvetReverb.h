@@ -12,6 +12,7 @@ namespace DSP
 class DarkVelvetReverb
 {
 public:
+
     DarkVelvetReverb(unsigned int maxLengthSamples, unsigned int maxNumPulses, unsigned int numChannels);
     ~DarkVelvetReverb();
     
@@ -35,7 +36,7 @@ public:
     // Process audio with the current settings
     void process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples);
     
-    void loadParams(std::string pathToParamFile);
+    void loadParams(enum RirModel rirModel);
 
 private:
     double sampleRate {48000.0};
@@ -44,14 +45,16 @@ private:
     unsigned int numPulses;
     unsigned int numFilters;
     
-    // Parameter values
+    // Filters
     std::vector<DSP::Allpole> dictionaryFilter;
     DSP::Allpole postFilter;
     //DSP::ParametricEqualizer eq;
-    std::vector<unsigned int> filterRouting;
-    std::vector<std::vector<unsigned int>> pulseLocation;
-    std::vector<std::vector<float>> pulseGain;
 
+
+    // Params
+
+
+    
 };
 
 }
