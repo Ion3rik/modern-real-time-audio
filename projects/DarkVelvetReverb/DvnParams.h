@@ -2,15 +2,20 @@
 
 #include <vector>
 
-struct DvnParams
+namespace Params
 {
     enum RirModel : unsigned int
-    {
-        Room0 = 0,
-        Room1,
-        Room2
-    };
-    DvnParams(RirModel model);
+{
+    Room0 = 0,
+    Room1,
+    Room2
+};
+
+struct DvnParams
+{
+    DvnParams();
+
+    void switchRoom(Params::RirModel newRirModel);
 
    /* unsigned int filterRouting[NUM_PULSE];
     unsigned int pulseLocation[NUM_PULSE * NUM_CHANNEL];
@@ -20,6 +25,9 @@ struct DvnParams
     float DictionaryFilterCoeff[(D_FILTER_ORDER + 1) * NUM_FILTER];
     float PostFilterCoeff[P_FILTER_ORDER + 1];*/
 
+    unsigned int numFilters;
+    unsigned int numPulses;
+    RirModel currentModel = Room0; // default to Room0
     std::vector<unsigned int> filterRouting;
     std::vector<unsigned int> pulseLocation;
     std::vector<float> pulseGain;
@@ -27,4 +35,8 @@ struct DvnParams
     std::vector<float> dictionaryFilterCoeff;
     std::vector<float> postFilterCoeff;
 
+    private: 
+        void populateParams(RirModel newRirModel);
+
 };  
+}

@@ -110,7 +110,7 @@ void DarkVelvetReverbAudioProcessor::prepareToPlay (double sampleRate, int sampl
 {
     const unsigned int numChannels { static_cast<unsigned int>(std::max(getMainBusNumInputChannels(), getMainBusNumOutputChannels())) };
     
-    darkVelvetReverb.prepare(sampleRate, 48000, numChannels);
+    darkVelvetReverb.prepare(sampleRate, 48000, numChannels, samplesPerBlock);
     
     parameterManager.updateParameters(true);
     

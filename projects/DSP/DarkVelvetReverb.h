@@ -3,9 +3,11 @@
 #include "../DSP/Ramp.h"
 #include "../DSP/MultiTapDelayLine.h"
 #include "../DSP/Allpole.h"
+#include "DvnParams.h"
 #include "ParametricEqualizer.h"
 #include "VelvetConvolver.h"
 #include <string>
+#include "JuceHeader.h"
 
 namespace DSP 
 {
@@ -31,28 +33,27 @@ public:
     void clear();
     
     // Recompute the velvet sequences, reallocate necessary memory and clear its contents
-    void prepare(double newSampleRate, unsigned int maxLengthSamples, unsigned int numChannels);
+    void prepare(double newSampleRate, unsigned int maxLengthSamples, unsigned int numChannels, unsigned int samplesPerBlock);
     
     // Process audio with the current settings
     void process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples);
     
-    void loadParams(enum RirModel rirModel);
+    void loadParams(enum Params::RirModel rirModel);
 
 private:
     double sampleRate {48000.0};
     
-    DSP::VelvetConvolver velvetConvolver;
+    DSP::VelvetConvolver velvetConvolver; // number of channels should be numChannels * numFilters
+    juce::AudioBuffer<float> dvnOutput;
     unsigned int numPulses;
     unsigned int numFilters;
     
     // Filters
     std::vector<DSP::Allpole> dictionaryFilter;
     DSP::Allpole postFilter;
-    //DSP::ParametricEqualizer eq;
-
 
     // Params
-
+    Params::DvnParams dvnParams;
 
     
 };
