@@ -15,15 +15,9 @@
 
 namespace DSP 
 {
-VelvetConvolver::VelvetConvolver(unsigned int maxLengthSamples, unsigned int maxNumPulses, unsigned int numChannels)
+VelvetConvolver::VelvetConvolver(unsigned int maxLengthSamples)
 {
     delayBuffer.resize(maxLengthSamples, 0.f);
-    for (unsigned int ch = 0; ch < numChannels; ++ch)
-    {
-        pulseGain.emplace_back(maxNumPulses, 0.f);
-        pulseLocation.emplace_back(maxNumPulses, 0u);
-    }
-    
 }
 
 VelvetConvolver::~VelvetConvolver()
@@ -41,16 +35,17 @@ void VelvetConvolver::clear()
         
 }
 
-void VelvetConvolver::prepare(unsigned int maxLengthSamples, unsigned int maxNumPulses, unsigned int numChannels)
+void VelvetConvolver::prepare(unsigned int maxLengthSamples, std::vector<unsigned int> maxNumPulses, unsigned int numChannels)
 {
     delayBuffer.clear();
     pulseLocation.clear();
     pulseGain.clear();
     delayBuffer.resize(maxLengthSamples, 0.f);
+    numPulses = maxNumPulses;
     for (unsigned int ch = 0; ch < numChannels; ++ch)
     {
-        pulseGain.emplace_back(maxNumPulses, 0.f);
-        pulseLocation.emplace_back(maxNumPulses, 0u);
+        pulseGain.emplace_back(maxNumPulses[ch], 0.f);
+        pulseLocation.emplace_back(maxNumPulses[ch], 0u);
     }
 }
 
@@ -61,8 +56,8 @@ void VelvetConvolver::process(float* const* output, const float* const* input, u
     numChannels = std::min(numChannels, static_cast<unsigned int>(delayBuffer.size()));
     unsigned int workingWriteIndex { writeIndex };
     for (unsigned int ch = 0; ch < numChannels; ++ch)
-    {
-        for (unsigned int m = 0; m < numPulses; ++m) // loop through each pulse
+    {   
+        for (unsigned int m = 0; m < numPulses[ch]; ++m) // loop through each pulse
         {
             unsigned int workingReadIndex { (workingWriteIndex + delayBufferSize - pulseLocation[ch][m]) % delayBufferSize };
             float g = pulseGain[ch][m]; // read the gain
@@ -83,24 +78,19 @@ void VelvetConvolver::process(float* const* output, const float* const* input, u
     writeIndex += numSamples; writeIndex %= delayBufferSize;
 }
 
-unsigned int VelvetConvolver::getNumPulses() const
-{
-    return numPulses;
-}
 
-
-void VelvetConvolver::setDelays(const unsigned int* const* newPulseLocation, const float* const* newPulseGain, unsigned int newNumPulses, unsigned int numChannels)
+void VelvetConvolver::setDelays(const std::vector<std::vector<unsigned int>>& newPulseLocation, const std::vector<std::vector<float>> newPulseGain, std::vector<unsigned int> newNumPulses, unsigned int numChannels)
 {
     // Resize in case number of pulses changed
-    pulseGain.resize(newNumPulses);
-    pulseLocation.resize(newNumPulses);
+    for (unsigned int ch = 0; ch < numChannels; ++ch)
+    {
+        pulseGain[ch].resize(newNumPulses[ch]);
+        pulseLocation[ch].resize(newNumPulses[ch]);
+    }
 
     // set the new values to the vectors
-    for (size_t ch = 0; ch < numChannels; ++ch)
-    {
-        pulseGain.emplace_back(newPulseGain[ch], newPulseGain[ch] + newNumPulses);
-        pulseLocation.emplace_back(newPulseLocation[ch], newPulseLocation[ch] + newNumPulses);
-    }
+    pulseGain = newPulseGain;
+    pulseLocation = newPulseLocation;
     numPulses = newNumPulses;
 }
 }

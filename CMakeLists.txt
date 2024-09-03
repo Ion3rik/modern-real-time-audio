@@ -317,6 +317,7 @@ add_plugin(darkvelvetreverb
     SOURCES
         ${darkvelvetreverb_source}/PluginEditor.cpp
         ${darkvelvetreverb_source}/PluginProcessor.cpp
+        ${darkvelvetreverb_source}/DvnParams.cpp
         ${dsp_source}/VelvetConvolver.cpp
         ${dsp_source}/Allpole.cpp
         ${dsp_source}/DarkVelvetReverb.cpp

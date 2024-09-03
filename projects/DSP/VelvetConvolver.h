@@ -17,7 +17,7 @@ namespace DSP
 class VelvetConvolver
 {
 public:
-    VelvetConvolver(unsigned int maxLengthSamples, unsigned int maxNumPulses, unsigned int numChannels);
+    VelvetConvolver(unsigned int maxLengthSamples);
     ~VelvetConvolver();
 
     // No default ctor
@@ -35,18 +35,16 @@ public:
     void clear();
 
     // Reallocate delay buffer for the new channel count and clear its contents
-    void prepare(unsigned int maxLengthSamples, unsigned int maxNumPulses, unsigned int numChannels);
+    void prepare(unsigned int maxLengthSamples, std::vector<unsigned int> maxNumPulses, unsigned int numChannels);
 
     // Process audio with the currently (fixed) set delay time
     void process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples);
-    
-    unsigned int getNumPulses() const;
 
      // Set the current delay times in samples and their gains
-    void setDelays(const unsigned int* const* newDelays, const float* const* newGains, unsigned int numPulses, unsigned int numChannels);
+    void setDelays(const std::vector<std::vector<unsigned int>>&  newPulseLocation, const std::vector<std::vector<float>> newPulseGain, std::vector<unsigned int> numPulses, unsigned int numChannels);
 
 private:
-    unsigned int numPulses { 0u };
+    std::vector<unsigned int> numPulses;
     std::vector<float> delayBuffer;
     std::vector<std::vector<unsigned int>> pulseLocation;
     std::vector<std::vector<float>> pulseGain;

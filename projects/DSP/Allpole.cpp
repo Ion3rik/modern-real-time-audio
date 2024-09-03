@@ -36,6 +36,7 @@ void Allpole::reallocateChannels(unsigned int maxNumChannels)
 
 void Allpole::setCoeffs(const std::vector<float>& newCoeffs)
 {
+    coeffs.resize(newCoeffs.capacity()); // CHECK IF THIS IS CORRECT
     coeffs = newCoeffs;
 }
 

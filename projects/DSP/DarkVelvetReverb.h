@@ -15,7 +15,7 @@ class DarkVelvetReverb
 {
 public:
 
-    DarkVelvetReverb(unsigned int maxLengthSamples, unsigned int maxNumPulses, unsigned int numChannels);
+    DarkVelvetReverb(unsigned int maxLengthSamples);
     ~DarkVelvetReverb();
     
     // remove default ctor
@@ -45,8 +45,8 @@ private:
     
     DSP::VelvetConvolver velvetConvolver; // number of channels should be numChannels * numFilters
     juce::AudioBuffer<float> dvnOutput;
-    unsigned int numPulses;
-    unsigned int numFilters;
+    unsigned int numPulses = 0;
+    unsigned int numFilters = 0;
     
     // Filters
     std::vector<DSP::Allpole> dictionaryFilter;
