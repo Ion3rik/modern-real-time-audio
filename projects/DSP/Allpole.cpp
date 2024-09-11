@@ -50,13 +50,20 @@ void Allpole::process(float* const* output, const float* const* input, unsigned 
         {
             float x { input[ch][n] };
 
-            float acc { x * coeffs[0] }; // b0
+            float acc { x * coeffs[filterOrder] }; // b0
             for (unsigned int p = 0; p < filterOrder; ++p)
             {
-                acc -= coeffs[p+1] * states[p + ch*channelOffset]; // a coeffs loop
+                acc -= coeffs[p] * states[p + ch*channelOffset]; // a coeffs loop
             }
             
-            output[ch][n] = acc;
+            output[ch][n] = acc; // write output
+
+            // update states
+            for (unsigned int p = filterOrder-1; p > 0; --p)
+            {
+                states[p + ch*channelOffset] = states[(p - 1) + ch*channelOffset];
+            }
+            states[0 + ch * channelOffset] = acc;
         }
     }
 }
@@ -72,9 +79,18 @@ void Allpole::process(float* output, const float* input, unsigned int numChannel
         for (unsigned int p = 0; p < filterOrder; ++p)
         {
             acc -= coeffs[p+1] * states[p + ch*channelOffset]; // a coeffs loop
+            
         }
         
         output[ch] = acc;
+
+        for (unsigned int p = filterOrder - 1; p > 0; --p)
+        {
+            states[p + ch * channelOffset] = states[(p - 1) + ch * channelOffset];
+        }
+
+        // Store the current input x as the new state for p = 0
+        states[0 + ch * channelOffset] = x;
     }
 }
 

@@ -5,17 +5,24 @@
 static const std::vector<mrta::ParameterInfo> parameters
 {
     { Param::ID::Room, Param::Name::Room, Param::Range::RoomLabels, 0},
+    { Param::ID::RtMod, Param::Name::RtMod, "", 1.f, Param::Range::RtModMin, Param::Range::RtModMax, Param::Range::RtModInc, Param::Range::RtModSkw }
 };
 
 DarkVelvetReverbAudioProcessor::DarkVelvetReverbAudioProcessor() :
     parameterManager(*this, ProjectInfo::projectName, parameters),
-    dvnReverb(10u*48000u) 
+    dvnReverb(3u*44100u) 
 {
     parameterManager.registerParameterCallback(Param::ID::Room,
     [this] (float value, bool /*force*/)
     {
         room = static_cast<Params::RirModel>(std::rint(value));
-        dvnReverb.loadParams(room);
+        dvnReverb.prepare(room);
+    });
+
+    parameterManager.registerParameterCallback(Param::ID::RtMod,
+    [this] (float value, bool /*force*/)
+    {
+
     });
 }
 
@@ -25,9 +32,13 @@ DarkVelvetReverbAudioProcessor::~DarkVelvetReverbAudioProcessor()
 
 void DarkVelvetReverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
+    const unsigned int numChannels { static_cast<unsigned int>(std::max(getMainBusNumInputChannels(), getMainBusNumOutputChannels())) };
     dvnReverb.clear();
-    dvnReverb.prepare(sampleRate, 10u*48000u, 2u, samplesPerBlock);
-    dvnReverb.loadParams(room);
+    dvnReverb.prepare(sampleRate, 3u*48000u, 2u, samplesPerBlock, room);
+
+    fxBuffer.setSize(static_cast<int>(numChannels), samplesPerBlock);
+    fxBuffer.clear();
+
 }
 
 void DarkVelvetReverbAudioProcessor::releaseResources()
@@ -43,9 +54,13 @@ void DarkVelvetReverbAudioProcessor::processBlock(juce::AudioBuffer<float>& buff
     const unsigned int numChannels{ static_cast<unsigned int>(buffer.getNumChannels()) };
     const unsigned int numSamples{ static_cast<unsigned int>(buffer.getNumSamples()) };
 
+    //for (int ch = 0; ch < static_cast<int>(numChannels); ++ch)
+        //fxBuffer.copyFrom(ch, 0, buffer, ch, 0, static_cast<int>(numSamples));
+
     dvnReverb.process(buffer.getArrayOfWritePointers(), buffer.getArrayOfReadPointers(), numChannels, numSamples);
-
-
+    
+    //for (int ch = 0; ch < static_cast<int>(numChannels); ++ch)
+    //    buffer.copyFrom(ch, 0, fxBuffer, ch, 0, static_cast<int>(numSamples));
 
 }
 

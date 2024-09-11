@@ -10,16 +10,22 @@ namespace Param
     namespace ID
     {
         static const juce::String Room { "room" };
+        static const juce::String RtMod {"rtMod" };
     }
 
     namespace Name
     {
         static const juce::String Room { "Room" };
+        static const juce::String RtMod {"RTMod" };
     }
 
     namespace Range
     {
         static const juce::StringArray RoomLabels { "Room 1", "Room 2", "Room 3" };
+        static constexpr float RtModMin { 0.1f };
+        static constexpr float RtModMax { 3.0f };
+        static constexpr float RtModInc { 0.1f };
+        static constexpr float RtModSkw { 0.5f };
     }
 }
 
@@ -57,6 +63,8 @@ private:
     mrta::ParameterManager parameterManager;
     DSP::DarkVelvetReverb dvnReverb;
     Params::RirModel room;
+
+    juce::AudioBuffer<float> fxBuffer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DarkVelvetReverbAudioProcessor)
 };

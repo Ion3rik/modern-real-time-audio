@@ -33,6 +33,8 @@ void DvnParams::populateParams(RirModel newRirModel)
             channelGain = params->channelGain;
             dictionaryFilterCoeff = params->dictionaryFilterCoeff;
             postFilterCoeff = params->postFilterCoeff;
+            dictionaryFilterOrder = dictionaryFilterCoeff[0].size()-1;
+            postFilterOrder = postFilterCoeff.size()-1;
             delete params;
             break;
         }
@@ -85,16 +87,15 @@ void DvnParams::splitPulsesToFilters(std::vector<std::vector<unsigned int>> &glo
     
     for (unsigned int ch = 0; ch < 2; ++ch)
     {
+        unsigned int channelOffset = ch*numFilter;
         for (unsigned int q = 0; q < numFilter; ++q)
         {
             for(unsigned int m = 0; m < numPulse; ++m)
             {
                 if (filterRouting[m] == q)
                 {
-                    pulseLocation[q].push_back(globalPulseLocation[ch][m]); // THIS BREAKES IT AT LEAST WITH TOY DATA
-                    pulseLocation[q+numFilter].push_back(globalPulseLocation[ch][m]);
-                    pulseGain[q].push_back(globalPulseGain[ch][m]);
-                    pulseGain[q+numFilter].push_back(globalPulseGain[ch][m]);
+                    pulseLocation[q+channelOffset].push_back(globalPulseLocation[ch][m]);
+                    pulseGain[q+channelOffset].push_back(globalPulseGain[ch][m]);
                 }
             }
             numPulsePerChannel[q] = pulseLocation[q].size(); // save the number of pulses for current filter

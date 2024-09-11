@@ -9,6 +9,8 @@
 */
 
 #include "VelvetConvolver.h"
+#include "DvnParams.h"
+#include "juce_core/system/juce_PlatformDefs.h"
 
 #include <algorithm>
 #include <cmath>
@@ -51,33 +53,53 @@ void VelvetConvolver::prepare(unsigned int maxLengthSamples, std::vector<unsigne
 
 void VelvetConvolver::process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples)
 {
+    //std::vector test = {5461, 7282, 88000};
     const unsigned int delayBufferSize { static_cast<unsigned int>(delayBuffer.size()) };
-
-    numChannels = std::min(numChannels, static_cast<unsigned int>(delayBuffer.size()));
     unsigned int workingWriteIndex { writeIndex };
-    for (unsigned int ch = 0; ch < numChannels; ++ch)
-    {   
-        for (unsigned int m = 0; m < numPulses[ch]; ++m) // loop through each pulse
-        {
-            unsigned int workingReadIndex { (workingWriteIndex + delayBufferSize - pulseLocation[ch][m]) % delayBufferSize };
-            float g = pulseGain[ch][m]; // read the gain
-
-            for (unsigned int n = 0; n < numSamples; ++n) // loop through each sample
+    for (unsigned int n = 0; n < numSamples; ++n) // loop through each sample
+    {
+        const float x =  input[0][n]; // take mono input only
+        delayBuffer[workingWriteIndex] = x;
+        for (unsigned int ch = 0; ch < numChannels; ++ch) // loop through each output channel
+        {   
+            float acc = 0.f;
+            for (unsigned int m = 0; m < numPulses[ch]; ++m) // loop through each pulse
             {
-                const float x = input[0][n]; // lets take only mono input
-
-                output[ch][n] += g * delayBuffer[workingReadIndex];
-                
-                if (m == 0)
-                    delayBuffer[workingWriteIndex] = x; // write to the delay line
-                ++workingWriteIndex; workingWriteIndex %= delayBufferSize; // increment the working write index
-                ++workingReadIndex; workingReadIndex %= delayBufferSize; // increment the working write index
+                unsigned int workingReadIndex { (workingWriteIndex + delayBufferSize - pulseLocation[ch][m]) % delayBufferSize };
+                acc += pulseGain[ch][m] * delayBuffer[workingReadIndex];
             }
+            output[ch][n] = acc;
         }
+        ++workingWriteIndex; workingWriteIndex %= delayBufferSize; // increment the working write index
     }
     writeIndex += numSamples; writeIndex %= delayBufferSize;
 }
 
+// PULSE LOOP OUTER
+/*void VelvetConvolver::process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples)
+{
+    //std::vector test = {5461, 7282, 88000};
+    const unsigned int delayBufferSize { static_cast<unsigned int>(delayBuffer.size()) };
+    for (unsigned int m = 0; m < 10; ++m) // loop through each pulse
+    {
+        for (unsigned int ch = 0; ch < numChannels; ++ch) // loop through each output channel
+        {   
+            unsigned int workingWriteIndex { writeIndex };
+            unsigned int workingReadIndex { (workingWriteIndex + delayBufferSize - pulseLocation[ch][m]) % delayBufferSize };
+            for (unsigned int n = 0; n < numSamples; ++n) // loop through each sample
+            {
+                if (m == 0)
+                    delayBuffer[workingWriteIndex] =  input[0][n]; // take mono input only
+
+                output[ch][n] += pulseGain[ch][m] * delayBuffer[workingReadIndex];
+                ++workingWriteIndex; workingWriteIndex %= delayBufferSize; // increment the working write index
+                ++workingReadIndex; workingReadIndex %= delayBufferSize;
+            }
+        }
+        
+    }
+    writeIndex += numSamples; writeIndex %= delayBufferSize;
+}*/
 
 void VelvetConvolver::setDelays(const std::vector<std::vector<unsigned int>>& newPulseLocation, const std::vector<std::vector<float>> newPulseGain, std::vector<unsigned int> newNumPulses, unsigned int numChannels)
 {

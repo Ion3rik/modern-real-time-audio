@@ -13,11 +13,11 @@ public:
     Allpole();
     ~Allpole();
 
-    Allpole(const Allpole&);
-    const Allpole& operator=(const Allpole&);
+    //Allpole(const Allpole&);
+    //const Allpole& operator=(const Allpole&);
 
-    Allpole(Allpole&&) = delete;
-    const Allpole& operator=(Allpole&&) = delete;
+    //llpole(Allpole&&) = delete;
+    //const Allpole& operator=(Allpole&&) = delete;
 
     // Clear all states
     void clear();

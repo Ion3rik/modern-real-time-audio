@@ -33,20 +33,18 @@ public:
     void clear();
     
     // Recompute the velvet sequences, reallocate necessary memory and clear its contents
-    void prepare(double newSampleRate, unsigned int maxLengthSamples, unsigned int numChannels, unsigned int samplesPerBlock);
+    void prepare(double newSampleRate, unsigned int maxLengthSamples, unsigned int numChannels, unsigned int samplesPerBlock, Params::RirModel rirModel);
+    void prepare(Params::RirModel rirModel);
     
     // Process audio with the current settings
     void process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples);
     
-    void loadParams(enum Params::RirModel rirModel);
 
 private:
     double sampleRate {48000.0};
     
     DSP::VelvetConvolver velvetConvolver; // number of channels should be numChannels * numFilters
     juce::AudioBuffer<float> dvnOutput;
-    unsigned int numPulses = 0;
-    unsigned int numFilters = 0;
     
     // Filters
     std::vector<DSP::Allpole> dictionaryFilter;
