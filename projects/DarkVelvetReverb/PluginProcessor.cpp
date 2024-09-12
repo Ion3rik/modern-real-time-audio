@@ -10,7 +10,7 @@ static const std::vector<mrta::ParameterInfo> parameters
 
 DarkVelvetReverbAudioProcessor::DarkVelvetReverbAudioProcessor() :
     parameterManager(*this, ProjectInfo::projectName, parameters),
-    dvnReverb(3u*44100u) 
+    dvnReverb(10u*44100u) 
 {
     parameterManager.registerParameterCallback(Param::ID::Room,
     [this] (float value, bool /*force*/)
@@ -22,7 +22,7 @@ DarkVelvetReverbAudioProcessor::DarkVelvetReverbAudioProcessor() :
     parameterManager.registerParameterCallback(Param::ID::RtMod,
     [this] (float value, bool /*force*/)
     {
-
+        dvnReverb.modDelays(value);
     });
 }
 

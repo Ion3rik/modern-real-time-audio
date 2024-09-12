@@ -41,6 +41,7 @@ void VelvetConvolver::prepare(unsigned int maxLengthSamples, std::vector<unsigne
 {
     delayBuffer.clear();
     pulseLocation.clear();
+    pulseLocationOg.clear();
     pulseGain.clear();
     delayBuffer.resize(maxLengthSamples, 0.f);
     numPulses = maxNumPulses;
@@ -48,6 +49,7 @@ void VelvetConvolver::prepare(unsigned int maxLengthSamples, std::vector<unsigne
     {
         pulseGain.emplace_back(maxNumPulses[ch], 0.f);
         pulseLocation.emplace_back(maxNumPulses[ch], 0u);
+        pulseLocationOg.emplace_back(maxNumPulses[ch], 0u);
     }
 }
 
@@ -108,11 +110,29 @@ void VelvetConvolver::setDelays(const std::vector<std::vector<unsigned int>>& ne
     {
         pulseGain[ch].resize(newNumPulses[ch]);
         pulseLocation[ch].resize(newNumPulses[ch]);
+        pulseLocationOg[ch].resize(newNumPulses[ch]);
     }
 
     // set the new values to the vectors
     pulseGain = newPulseGain;
+    pulseLocationOg = newPulseLocation;
     pulseLocation = newPulseLocation;
     numPulses = newNumPulses;
 }
+
+void VelvetConvolver::modDelays(const float modifier)
+{
+    pulseLocation = pulseLocationOg; // copy the og values
+    unsigned int bufferSize = delayBuffer.size();
+    for (auto& ch : pulseLocation)
+    {
+        for (auto& pulse : ch)
+        {
+            pulse =  static_cast<unsigned int>(pulse * modifier);
+            pulse = std::min(pulse, bufferSize); // limit to the size of the buffer
+        }
+    }
+
+}
+
 }

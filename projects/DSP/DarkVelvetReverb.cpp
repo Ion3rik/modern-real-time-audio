@@ -133,4 +133,9 @@ void DarkVelvetReverb::process(float* const* output, const float* const* input, 
     
 }
 
+void DarkVelvetReverb::modDelays(const float modifier)
+{
+    velvetConvolver.modDelays(modifier);
+}
+
 }

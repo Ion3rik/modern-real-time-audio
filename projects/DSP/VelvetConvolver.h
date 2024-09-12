@@ -43,10 +43,14 @@ public:
      // Set the current delay times in samples and their gains
     void setDelays(const std::vector<std::vector<unsigned int>>&  newPulseLocation, const std::vector<std::vector<float>> newPulseGain, std::vector<unsigned int> numPulses, unsigned int numChannels);
 
+    // Apply delay modifier
+    void modDelays(const float modifier);
+
 private:
     std::vector<unsigned int> numPulses;
     std::vector<float> delayBuffer;
     std::vector<std::vector<unsigned int>> pulseLocation;
+    std::vector<std::vector<unsigned int>> pulseLocationOg;
     std::vector<std::vector<float>> pulseGain;
     unsigned int writeIndex { 0u };
 };

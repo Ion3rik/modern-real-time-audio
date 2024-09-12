@@ -39,7 +39,8 @@ public:
     // Process audio with the current settings
     void process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples);
     
-
+    void modDelays(const float modifier);
+    
 private:
     double sampleRate {48000.0};
     
