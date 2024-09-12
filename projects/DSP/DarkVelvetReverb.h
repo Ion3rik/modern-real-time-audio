@@ -16,7 +16,7 @@ class DarkVelvetReverb
 {
 public:
 
-    DarkVelvetReverb(unsigned int maxLengthSamples);
+    DarkVelvetReverb(unsigned int maxLengthSamples, unsigned int numChannels);
     ~DarkVelvetReverb();
     
     // remove default ctor
@@ -41,6 +41,7 @@ public:
     void process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples);
     
     void modDelays(const float modifier);
+    void flipPulseGains();
     void setDensityDivider(const unsigned int divider);
 
 private:
@@ -55,9 +56,7 @@ private:
 
     // Params
     Params::DvnParams dvnParams;
-    float densityCorrection;
-
-    
+    float densityCorrection {1.f};
 };
 
 }

@@ -17,7 +17,7 @@ namespace DSP
 class VelvetConvolver
 {
 public:
-    VelvetConvolver(unsigned int maxLengthSamples);
+    VelvetConvolver(unsigned int maxLengthSamples, unsigned int numChannels);
     ~VelvetConvolver();
 
     // No default ctor
@@ -46,8 +46,19 @@ public:
     // Apply delay modifier
     void modDelays(const float modifier);
 
+    //  Flip the pulse gains
+    void flipPulseGains();
+
     // Set density divider
     void setDensityDivider(const unsigned int divider);
+
+    // get number of pulses
+    unsigned int getTotalNumPulses();
+
+    // get longest delay
+    unsigned int getLongestDelay();
+
+
 
 private:
     std::vector<unsigned int> numPulses;
@@ -57,5 +68,6 @@ private:
     std::vector<std::vector<float>> pulseGain;
     unsigned int writeIndex { 0u };
     unsigned int densityDivider {1u};
+    unsigned int numChannels;
 };
 }

@@ -9,8 +9,8 @@
 
 namespace DSP 
 {
-DarkVelvetReverb::DarkVelvetReverb(unsigned int maxLengthSamples) :
-    velvetConvolver(maxLengthSamples)
+DarkVelvetReverb::DarkVelvetReverb(unsigned int maxLengthSamples, unsigned int numChannels) :
+    velvetConvolver(maxLengthSamples, numChannels)
     //eq(2u, numChannels)
 {
     
@@ -126,22 +126,23 @@ void DarkVelvetReverb::process(float* const* output, const float* const* input, 
         }
 
     }
-
-    
-    
     // Run the post filter
     postFilter.process(output, input, numChannels, numSamples);
-    
 }
 
 void DarkVelvetReverb::modDelays(const float modifier)
 {
     velvetConvolver.modDelays(modifier);
 }
-
+void DarkVelvetReverb::flipPulseGains()
+{
+    velvetConvolver.flipPulseGains();
+}
 void DarkVelvetReverb::setDensityDivider(const unsigned int divider)
 {
+    float totalNumPulses = static_cast<unsigned int>(velvetConvolver.getTotalNumPulses() / divider);
+    float longestDelay = static_cast<float>(velvetConvolver.getLongestDelay());
     velvetConvolver.setDensityDivider(divider);
-    densityCorrection = std::sqrt(divider);
+    densityCorrection = std::sqrt(std::sqrt(static_cast<float>(divider)));
 }
 }

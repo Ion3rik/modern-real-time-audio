@@ -1,18 +1,27 @@
 #include "PluginProcessor.h"
 #include "DvnParams.h"
+#include "ParametricEqualizer.h"
 #include "PluginEditor.h"
 
 static const std::vector<mrta::ParameterInfo> parameters
 {
     //{ Param::ID::Room, Param::Name::Room, Param::Range::RoomLabels, 0},
     { Param::ID::RtMod, Param::Name::RtMod, "", 1.f, Param::Range::RtModMin, Param::Range::RtModMax, Param::Range::RtModInc, Param::Range::RtModSkw },
-    { Param::ID::DensityMod, Param::Name::DensityMod, "", 1.f, Param::Range::DensityModMin, Param::Range::DensityModMax, Param::Range::DensityModInc, Param::Range::DensityModSkw }
+    { Param::ID::DensityMod, Param::Name::DensityMod, "", 2.f, Param::Range::DensityModMin, Param::Range::DensityModMax, Param::Range::DensityModInc, Param::Range::DensityModSkw },
+    { Param::ID::Lowpass, Param::Name::Lowpass, "", 20000.f, Param::Range::LowpassMin, Param::Range::LowpassMax, Param::Range::LowpassInc, Param::Range::LowpassSkw },
+    { Param::ID::Highpass, Param::Name::Highpass, "", 0.f, Param::Range::HighpassMin, Param::Range::HighpassMax, Param::Range::HighpassInc, Param::Range::HighpassSkw },
+    { Param::ID::ReverseDecay,  Param::Name::ReverseDecay,  Param::Range::ReverseDecay, Param::Range::NormalDecay, true },
 };
 
 DarkVelvetReverbAudioProcessor::DarkVelvetReverbAudioProcessor() :
     parameterManager(*this, ProjectInfo::projectName, parameters),
-    dvnReverb(10u*44100u) 
+    dvnReverb(10u*44100u, getTotalNumOutputChannels()),
+    eq(2, getTotalNumOutputChannels())
 {
+    eq.setBandType(0, DSP::ParametricEqualizer::LowPass);
+    eq.setBandType(1, DSP::ParametricEqualizer::HighPass);
+    eq.setBandFrequency(0, 20000.f);
+    eq.setBandFrequency(1, 0);
     //parameterManager.registerParameterCallback(Param::ID::Room,
     //[this] (float value, bool /*force*/)
     //{
@@ -31,7 +40,25 @@ DarkVelvetReverbAudioProcessor::DarkVelvetReverbAudioProcessor() :
     {
         dvnReverb.setDensityDivider(static_cast<unsigned int>(value));
     });
+
+    parameterManager.registerParameterCallback(Param::ID::Lowpass,
+    [this] (float value, bool /*force*/)
+    {
+        eq.setBandFrequency(0, value);
+    });
+
+    parameterManager.registerParameterCallback(Param::ID::Highpass,
+    [this] (float value, bool /*force*/)
+    {
+        eq.setBandFrequency(1, value);
+    });
+        parameterManager.registerParameterCallback(Param::ID::ReverseDecay,
+    [this](float newValue, bool force)
+    {
+        dvnReverb.flipPulseGains();
+    });
 }
+
 
 DarkVelvetReverbAudioProcessor::~DarkVelvetReverbAudioProcessor()
 {
@@ -46,6 +73,10 @@ void DarkVelvetReverbAudioProcessor::prepareToPlay(double sampleRate, int sample
     fxBuffer.setSize(static_cast<int>(numChannels), samplesPerBlock);
     fxBuffer.clear();
 
+    eq.setBandType(0, DSP::ParametricEqualizer::LowPass);
+    eq.setBandType(1, DSP::ParametricEqualizer::HighPass);
+
+    eq.prepare(sampleRate, numChannels);
 }
 
 void DarkVelvetReverbAudioProcessor::releaseResources()
@@ -69,6 +100,8 @@ void DarkVelvetReverbAudioProcessor::processBlock(juce::AudioBuffer<float>& buff
     //for (int ch = 0; ch < static_cast<int>(numChannels); ++ch)
     //    buffer.copyFrom(ch, 0, fxBuffer, ch, 0, static_cast<int>(numSamples));
 
+    // Process Eq
+    eq.process(buffer.getArrayOfWritePointers(), buffer.getArrayOfReadPointers(), numChannels, numSamples);
 }
 
 void DarkVelvetReverbAudioProcessor::getStateInformation(juce::MemoryBlock& destData)

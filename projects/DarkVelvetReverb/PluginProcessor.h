@@ -3,6 +3,7 @@
 #include <JuceHeader.h>
 
 #include "DarkVelvetReverb.h"
+#include "ParametricEqualizer.h"
 #include "RingMod.h"
 
 namespace Param
@@ -12,6 +13,9 @@ namespace Param
         static const juce::String Room { "room" };
         static const juce::String RtMod {"rtMod" };
         static const juce::String DensityMod {"densityMod" };
+        static const juce::String Lowpass {"Lowpass" };
+        static const juce::String Highpass {"Highpass" };
+        static const juce::String ReverseDecay { "reverseDecay" };
     }
 
     namespace Name
@@ -19,6 +23,9 @@ namespace Param
         static const juce::String Room { "Room" };
         static const juce::String RtMod {"RT Multiplier" };
         static const juce::String DensityMod {"Density Divider" };
+        static const juce::String Lowpass {"Lowpass Cutoff" };
+        static const juce::String Highpass {"Highpass Cutoff" };
+        static const juce::String ReverseDecay {"Reverse Decay" };
     }
 
     namespace Range
@@ -30,9 +37,22 @@ namespace Param
         static constexpr float RtModSkw { 0.5f };
 
         static constexpr float DensityModMin { 1.f };
-        static constexpr float DensityModMax { 20.f };
+        static constexpr float DensityModMax { 100.f };
         static constexpr float DensityModInc { 1.f };
-        static constexpr float DensityModSkw { 0.5f };
+        static constexpr float DensityModSkw { 0.3f };
+
+        static constexpr float LowpassMin { 200.f };
+        static constexpr float LowpassMax { 20000.f };
+        static constexpr float LowpassInc { 1.f };
+        static constexpr float LowpassSkw { 0.3f };
+
+        static constexpr float HighpassMin { 0.f };
+        static constexpr float HighpassMax { 5000.f };
+        static constexpr float HighpassInc { 1.f };
+        static constexpr float HighpassSkw { 0.3f };
+
+        static const juce::String ReverseDecay { "Reverse" };
+        static const juce::String NormalDecay { "Normal" };
     }
 }
 
@@ -69,6 +89,7 @@ public:
 private:
     mrta::ParameterManager parameterManager;
     DSP::DarkVelvetReverb dvnReverb;
+    DSP::ParametricEqualizer eq;
     Params::RirModel room;
 
     juce::AudioBuffer<float> fxBuffer;

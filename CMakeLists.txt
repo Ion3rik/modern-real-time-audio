@@ -310,7 +310,7 @@ set(darkvelvetreverb_source ${CMAKE_CURRENT_SOURCE_DIR}/projects/DarkVelvetRever
 
 add_plugin(darkvelvetreverb
     VERSION 0.1.0
-    PLUGIN_NAME "Dark Velvet Reverb"
+    PLUGIN_NAME "DarkVelvetReverb"
     PROD_NAME Dark Velvet Reverb
     PROD_CODE dvnr
     SYNTH FALSE
@@ -321,6 +321,8 @@ add_plugin(darkvelvetreverb
         ${dsp_source}/VelvetConvolver.cpp
         ${dsp_source}/Allpole.cpp
         ${dsp_source}/DarkVelvetReverb.cpp
+        ${dsp_source}/ParametricEqualizer.cpp
+        ${dsp_source}/Biquad.cpp
     INCLUDE_DIRS
         ${dsp_source}
         ${darkvelvetreverb_source})
