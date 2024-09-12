@@ -6,6 +6,7 @@
 #include "DvnParams.h"
 #include "ParametricEqualizer.h"
 #include "VelvetConvolver.h"
+#include <cmath>
 #include <string>
 #include "JuceHeader.h"
 
@@ -40,7 +41,8 @@ public:
     void process(float* const* output, const float* const* input, unsigned int numChannels, unsigned int numSamples);
     
     void modDelays(const float modifier);
-    
+    void setDensityDivider(const unsigned int divider);
+
 private:
     double sampleRate {48000.0};
     
@@ -53,6 +55,7 @@ private:
 
     // Params
     Params::DvnParams dvnParams;
+    float densityCorrection;
 
     
 };

@@ -65,7 +65,7 @@ void VelvetConvolver::process(float* const* output, const float* const* input, u
         for (unsigned int ch = 0; ch < numChannels; ++ch) // loop through each output channel
         {   
             float acc = 0.f;
-            for (unsigned int m = 0; m < numPulses[ch]; ++m) // loop through each pulse
+            for (unsigned int m = 0; m < numPulses[ch]; m = m+densityDivider) // loop through each pulse (skip some based on divider)
             {
                 unsigned int workingReadIndex { (workingWriteIndex + delayBufferSize - pulseLocation[ch][m]) % delayBufferSize };
                 acc += pulseGain[ch][m] * delayBuffer[workingReadIndex];
@@ -132,7 +132,10 @@ void VelvetConvolver::modDelays(const float modifier)
             pulse = std::min(pulse, bufferSize); // limit to the size of the buffer
         }
     }
-
 }
 
+void VelvetConvolver::setDensityDivider(const unsigned int divider)
+{
+    densityDivider = std::max(divider, 1u); // has to be at least 1
+}
 }

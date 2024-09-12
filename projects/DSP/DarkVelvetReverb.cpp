@@ -4,6 +4,7 @@
 #include "MultiTapDelayLine.h"
 #include "VelvetConvolver.h"
 #include "DvnParams.h"
+#include <cmath>
 
 
 namespace DSP 
@@ -119,9 +120,9 @@ void DarkVelvetReverb::process(float* const* output, const float* const* input, 
         for (unsigned int ch = 0; ch < numChannels; ++ch)
         {
             if (q == 0)
-                juce::FloatVectorOperations::copyWithMultiply(output[ch], inputChannels[ch], dvnParams.channelGain[ch], static_cast<int>(numSamples));
+                juce::FloatVectorOperations::copyWithMultiply(output[ch], inputChannels[ch], densityCorrection*dvnParams.channelGain[ch], static_cast<int>(numSamples));
             else
-                juce::FloatVectorOperations::addWithMultiply(output[ch], inputChannels[ch], dvnParams.channelGain[ch], static_cast<int>(numSamples));
+                juce::FloatVectorOperations::addWithMultiply(output[ch], inputChannels[ch], densityCorrection*dvnParams.channelGain[ch], static_cast<int>(numSamples));
         }
 
     }
@@ -138,4 +139,9 @@ void DarkVelvetReverb::modDelays(const float modifier)
     velvetConvolver.modDelays(modifier);
 }
 
+void DarkVelvetReverb::setDensityDivider(const unsigned int divider)
+{
+    velvetConvolver.setDensityDivider(divider);
+    densityCorrection = std::sqrt(divider);
+}
 }

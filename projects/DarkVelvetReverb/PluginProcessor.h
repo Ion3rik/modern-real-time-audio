@@ -11,12 +11,14 @@ namespace Param
     {
         static const juce::String Room { "room" };
         static const juce::String RtMod {"rtMod" };
+        static const juce::String DensityMod {"densityMod" };
     }
 
     namespace Name
     {
         static const juce::String Room { "Room" };
-        static const juce::String RtMod {"RTMod" };
+        static const juce::String RtMod {"RT Multiplier" };
+        static const juce::String DensityMod {"Density Divider" };
     }
 
     namespace Range
@@ -26,6 +28,11 @@ namespace Param
         static constexpr float RtModMax { 3.0f };
         static constexpr float RtModInc { 0.1f };
         static constexpr float RtModSkw { 0.5f };
+
+        static constexpr float DensityModMin { 1.f };
+        static constexpr float DensityModMax { 20.f };
+        static constexpr float DensityModInc { 1.f };
+        static constexpr float DensityModSkw { 0.5f };
     }
 }
 

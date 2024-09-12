@@ -46,6 +46,9 @@ public:
     // Apply delay modifier
     void modDelays(const float modifier);
 
+    // Set density divider
+    void setDensityDivider(const unsigned int divider);
+
 private:
     std::vector<unsigned int> numPulses;
     std::vector<float> delayBuffer;
@@ -53,5 +56,6 @@ private:
     std::vector<std::vector<unsigned int>> pulseLocationOg;
     std::vector<std::vector<float>> pulseGain;
     unsigned int writeIndex { 0u };
+    unsigned int densityDivider {1u};
 };
 }

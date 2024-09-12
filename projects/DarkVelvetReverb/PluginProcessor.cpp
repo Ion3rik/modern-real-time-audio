@@ -4,25 +4,32 @@
 
 static const std::vector<mrta::ParameterInfo> parameters
 {
-    { Param::ID::Room, Param::Name::Room, Param::Range::RoomLabels, 0},
-    { Param::ID::RtMod, Param::Name::RtMod, "", 1.f, Param::Range::RtModMin, Param::Range::RtModMax, Param::Range::RtModInc, Param::Range::RtModSkw }
+    //{ Param::ID::Room, Param::Name::Room, Param::Range::RoomLabels, 0},
+    { Param::ID::RtMod, Param::Name::RtMod, "", 1.f, Param::Range::RtModMin, Param::Range::RtModMax, Param::Range::RtModInc, Param::Range::RtModSkw },
+    { Param::ID::DensityMod, Param::Name::DensityMod, "", 1.f, Param::Range::DensityModMin, Param::Range::DensityModMax, Param::Range::DensityModInc, Param::Range::DensityModSkw }
 };
 
 DarkVelvetReverbAudioProcessor::DarkVelvetReverbAudioProcessor() :
     parameterManager(*this, ProjectInfo::projectName, parameters),
     dvnReverb(10u*44100u) 
 {
-    parameterManager.registerParameterCallback(Param::ID::Room,
-    [this] (float value, bool /*force*/)
-    {
-        room = static_cast<Params::RirModel>(std::rint(value));
-        dvnReverb.prepare(room);
-    });
+    //parameterManager.registerParameterCallback(Param::ID::Room,
+    //[this] (float value, bool /*force*/)
+    //{
+    //    room = static_cast<Params::RirModel>(std::rint(value));
+    //    dvnReverb.prepare(room);
+    //});
 
     parameterManager.registerParameterCallback(Param::ID::RtMod,
     [this] (float value, bool /*force*/)
     {
         dvnReverb.modDelays(value);
+    });
+
+    parameterManager.registerParameterCallback(Param::ID::DensityMod,
+    [this] (float value, bool /*force*/)
+    {
+        dvnReverb.setDensityDivider(static_cast<unsigned int>(value));
     });
 }
 
