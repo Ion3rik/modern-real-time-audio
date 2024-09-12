@@ -95,7 +95,7 @@ void DarkVelvetReverb::process(float* const* output, const float* const* input, 
     unsigned int Q = dvnParams.numFilter;
     dvnOutput.clear();
    // dvnOutput.setSize(2*Q, numSamples);
-    numChannels = 2u; // We will always produce stereo output
+    numChannels = std::min(numChannels,2u); // We will always produce maximum 2 channels
    
     
 
